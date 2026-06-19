@@ -46,7 +46,45 @@ export interface CartItem {
 }
 
 export default function App() {
-  const [currentView, setCurrentView] = useState<ViewType>('landing');
+  const getCustomViewFromPath = (path: string): ViewType => {
+    if (path === '/' || path === '') return 'landing';
+    if (path === '/menu' || path.startsWith('/menu')) return 'menu-list';
+    if (path === '/meal' || path.startsWith('/meal')) return 'meal-detail';
+    if (path === '/cart') return 'cart';
+    if (path === '/checkout/confirm') return 'confirm-payment';
+    if (path === '/checkout/success') return 'order-confirmation';
+    if (path === '/tracking') return 'order-tracking';
+    if (path === '/catering') return 'catering';
+    if (path === '/contact') return 'contact';
+    if (path === '/admin/login' || path.startsWith('/admin/login')) return 'admin-login';
+    if (path === '/admin/dashboard' || path.startsWith('/admin/dashboard')) return 'admin-dashboard';
+    return 'landing';
+  };
+
+  const initialView = getCustomViewFromPath(window.location.pathname);
+  const [currentView, _setCurrentView] = useState<ViewType>(initialView);
+
+  const setCurrentView = (view: ViewType) => {
+    _setCurrentView(view);
+    let path = '/';
+    switch (view) {
+      case 'landing': path = '/'; break;
+      case 'menu-list': path = '/menu'; break;
+      case 'meal-detail': path = '/meal'; break;
+      case 'cart': path = '/cart'; break;
+      case 'confirm-payment': path = '/checkout/confirm'; break;
+      case 'order-confirmation': path = '/checkout/success'; break;
+      case 'order-tracking': path = '/tracking'; break;
+      case 'catering': path = '/catering'; break;
+      case 'contact': path = '/contact'; break;
+      case 'admin-login': path = '/admin/login'; break;
+      case 'admin-dashboard': path = '/admin/dashboard'; break;
+    }
+    if (window.location.pathname !== path) {
+      window.history.pushState({ view }, '', path);
+    }
+  };
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
@@ -62,6 +100,21 @@ export default function App() {
   const [isCustomizeModalOpen, setIsCustomizeModalOpen] = useState(false);
   const [customizePreNotes, setCustomizePreNotes] = useState('');
   const [customizeInitialQty, setCustomizeInitialQty] = useState(1);
+
+  // popstate event handler for standard back/forward routing
+  useEffect(() => {
+    const handlePopState = (e: PopStateEvent) => {
+      const state = e.state;
+      if (state && state.view) {
+        _setCurrentView(state.view);
+      } else {
+        const mappedView = getCustomViewFromPath(window.location.pathname);
+        _setCurrentView(mappedView);
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   // Retrieve student profile on boot
   useEffect(() => {
