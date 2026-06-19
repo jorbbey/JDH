@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    
+    <!-- SEO Optimization -->
+    <title>JDH Kitchen | Affordable Student Homemade Meals</title>
+    <meta name="description" content="JDH Kitchen makes it easy for university students to enjoy fresh, hygienic, and delicious traditional homemade meals at student-friendly prices. Buy based on weekly pooling thresholds." />
+    <meta name="keywords" content="cooking, clean food, student discount, meal plan, campus delivery, traditional soup, Jollof, catering, pre-order" />
+    <link rel="canonical" href="https://ais-dev-mnh7s4hfhh73plylv3ww2c-161588911161.europe-west2.run.app" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="JDH Kitchen | Affordable Student Homemade Meals" />
+    <meta property="og:description" content="Enjoy high-quality traditional homemade meals. Pre-order in bulk dynamically to save money on campus." />
+    <meta property="og:image" content="/src/assets/food collage.png" />
+    <meta property="og:url" content="https://ais-dev-mnh7s4hfhh73plylv3ww2c-161588911161.europe-west2.run.app" />
+    <meta property="og:site_name" content="JDH Kitchen" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="JDH Kitchen | Affordable Student Homemade Meals" />
+    <meta name="twitter:description" content="Tasty traditional African and continental dishes cooked freshly based on dynamic student pre-orders to beat restaurant prices." />
+    <meta name="twitter:image" content="/src/assets/food collage.png" />
+
+    <!-- Progressive Web App Meta -->
+    <meta name="theme-color" content="#C65D3A" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="JDH Kitchen" />
+    
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/src/assets/JDH_logo-trans.png" />
+
+    <!-- Structured Data (JSON-LD Scheme) for Search Engines -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Restaurant",
+        "name": "JDH Kitchen",
+        "image": "/src/assets/food collage.png",
+        "description": "Premium homemade campus meal co-operative preparing authentic African lunches and dinners dynamically based on student pooling.",
+        "servesCuisine": "African, Continental, Soup, Jollof",
+        "priceRange": "$",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "University Campus",
+          "addressCountry": "NG"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+
+    <!-- Register service worker -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('JDH Kitchen SW registered successfully:', registration.scope);
+            })
+            .catch((err) => {
+              console.error('JDH Kitchen SW registration failed:', err);
+            });
+        });
+      }
+    </script>
+  </body>
+</html>

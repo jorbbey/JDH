@@ -1,0 +1,6 @@
+{
+  "name": "JDH Kitchen",
+  "description": "Fresh home made foods where every scoop satisfies your taste buds. A weekly food ordering platform for university students with minimum threshold order tracking and catering.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
