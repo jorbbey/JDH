@@ -10,12 +10,12 @@
   "categories": ["food", "productivity", "utilities"],
   "icons": [
     {
-      "src": "src/assets/JDH_logo-trans.png",
+      "src": "/src/assets/JDH_logo-trans.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "src/assets/JDH_logo-trans.png",
+      "src": "/src/assets/JDH_logo-trans.png",
       "sizes": "512x512",
       "type": "image/png"
     }
