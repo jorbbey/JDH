@@ -205,7 +205,7 @@ export const menuService = {
       .from('delivery_schedules')
       .select('*')
       .eq('menu_id', menuId)
-      .single();
+      .maybeSingle();
 
     if (error) {
       console.error(`Error fetching delivery schedule for menu ${menuId}:`, error);

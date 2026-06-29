@@ -65,8 +65,8 @@ export const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
   // Derive codes
   const displayPickupCode = order?.pickup_code_direct || `ML-${orderId.slice(0, 5).toUpperCase()}`;
 
-  // Direct Pickup Guidelines matching co-op schedules
-  const pickupLocation = 'JDH Central Kitchen Hub, Student Union Building (SUB) Basement Wing A, Campus';
+  // Direct Delivery Guidelines matching co-op schedules
+  const deliveryLocation = order?.hostel_name || 'Front of school / Coe Villa';
   const pickupTime = '1:00 PM - 5:00 PM';
   const pickupDate = 'Next Thursday / Sunday (Subject to order pooling confirmation)';
 
@@ -89,7 +89,7 @@ export const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
           </Badge>
 
           <Text fontSize="xs" color="gray.600" mb={8} lineHeight="relaxed" maxW="xl">
-            Thank you for dining with <strong>JDH Kitchen Cooperative</strong>. Your pre-order is registered successfully. All orders are compiled for collection from our central hub.
+            Thank you for dining with <strong>JDH Kitchen Cooperative</strong>. Your pre-order is registered successfully. Your meal will be delivered directly to your selected location.
           </Text>
 
           {/* Core Collection Pass Panel Section */}
@@ -98,7 +98,7 @@ export const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
               <HStack spaceX={2.5}>
                 <Lock size={16} color="#C65D3A" />
                 <Heading as="h4" size="xs" fontWeight="black" color="#C65D3A" textTransform="uppercase" letterSpacing="wide">
-                  Your Secured Collection Pass
+                  Your Secured Delivery Pass
                 </Heading>
               </HStack>
 
@@ -107,15 +107,15 @@ export const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
                   <HStack spaceX={3} align="flex-start">
                     <MapPin size={16} color="black" style={{ marginTop: '2px', flexShrink: 0 }} />
                     <VStack align="flex-start" spaceY={0}>
-                      <Text fontSize="9px" color="gray.450" fontWeight="bold">PICKUP LOCATION</Text>
-                      <Text fontSize="xs" fontWeight="bold" color="black">{pickupLocation}</Text>
+                      <Text fontSize="9px" color="gray.450" fontWeight="bold">DELIVERY LOCATION</Text>
+                      <Text fontSize="xs" fontWeight="bold" color="black">{deliveryLocation}</Text>
                     </VStack>
                   </HStack>
 
                   <HStack spaceX={3} align="flex-start">
                     <Calendar size={16} color="black" style={{ marginTop: '2px', flexShrink: 0 }} />
                     <VStack align="flex-start" spaceY={0}>
-                      <Text fontSize="9px" color="gray.450" fontWeight="bold">PICKUP DATE</Text>
+                      <Text fontSize="9px" color="gray.450" fontWeight="bold">DELIVERY DATE</Text>
                       <Text fontSize="xs" fontWeight="bold" color="black">{pickupDate}</Text>
                     </VStack>
                   </HStack>
@@ -123,7 +123,7 @@ export const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
                   <HStack spaceX={3} align="flex-start">
                     <Clock size={16} color="black" style={{ marginTop: '2px', flexShrink: 0 }} />
                     <VStack align="flex-start" spaceY={0}>
-                      <Text fontSize="9px" color="gray.450" fontWeight="bold">PICKUP TIME WINDOW</Text>
+                      <Text fontSize="9px" color="gray.450" fontWeight="bold">DELIVERY TIME WINDOW</Text>
                       <Text fontSize="xs" fontWeight="bold" color="black">{pickupTime}</Text>
                     </VStack>
                   </HStack>
@@ -136,7 +136,7 @@ export const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
                     {displayPickupCode}
                   </Text>
                   <Text fontSize="9.5px" color="gray.600" fontWeight="bold" lineHeight="short">
-                    Save this code. You will need it to collect your order.
+                    Keep this code handy. You will need it when receiving your delivery.
                   </Text>
                 </Box>
               </Grid>

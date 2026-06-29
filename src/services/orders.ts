@@ -108,8 +108,8 @@ const MOCK_ORDERS: DetailedOrder[] = [
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     customer_name: 'Damilola Adebayo',
-    customer_phone: '+234 812 345 6789',
-    customer_whatsapp: '+234 812 345 6789',
+    customer_phone: '+234 703 891 2407',
+    customer_whatsapp: '+234 703 891 2407',
     pickup_code_direct: 'RC-10492',
     items: [
       {
@@ -138,7 +138,7 @@ const MOCK_ORDERS: DetailedOrder[] = [
     profiles: {
       full_name: 'Damilola Adebayo',
       email: 'student@campus.edu',
-      phone: '+234 812 345 6789',
+      phone: '+234 703 891 2407',
     },
   },
 ];

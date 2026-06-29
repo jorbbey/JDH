@@ -10,10 +10,20 @@ export type ProfileRow = Database['public']['Tables']['profiles']['Row'];
 export type ProfileUpdate = Database['public']['Tables']['profiles']['Update'];
 
 // Fallback user state for sandboxed preview experience when Supabase is not connected
-const MOCK_USER = null;
+const MOCK_USER = {
+  id: 'mock-student-id-12345',
+  email: 'student@campus.edu',
+  role: 'student' as UserRole,
+  full_name: 'Damilola Adebayo',
+  phone: '+234 703 891 2407',
+  hostel_name: 'Moremi Hall',
+  room_number: 'B204',
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+};
 
 const getStoredMockUser = () => {
-  if (typeof window === 'undefined') return null;
+  if (typeof window === 'undefined') return MOCK_USER;
   const stored = localStorage.getItem('campus_feast_mock_user');
   if (stored) {
     try {
@@ -22,7 +32,7 @@ const getStoredMockUser = () => {
       // ignore
     }
   }
-  return null;
+  return MOCK_USER;
 };
 
 const setStoredMockUser = (user: any) => {
@@ -110,9 +120,25 @@ export const authService = {
           error: null,
         };
       }
+      console.info('Supabase unconfigured, logging in as dummy student');
+      const studentUser = {
+        id: 'mock-student-id-12345',
+        email: email || 'student@campus.edu',
+        role: 'student' as UserRole,
+        full_name: 'Damilola Adebayo',
+        phone: '+234 703 891 2407',
+        hostel_name: 'Moremi Hall',
+        room_number: 'B204',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      setStoredMockUser(studentUser);
       return {
-        data: { user: null, session: null },
-        error: { message: 'Only administrator sign-in is supported. Students can place orders and track them as guests without needing accounts.' } as any,
+        data: {
+          user: { id: studentUser.id, email: studentUser.email },
+          session: { access_token: 'dummy-token' },
+        },
+        error: null,
       };
     }
 

@@ -333,7 +333,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                         <HStack w="full" px={3} py={2.5} bg="white" borderWidth="1.5px" borderColor="gray.200" borderRadius="xl">
                           <Phone size={16} color="gray" />
                           <Input
-                            placeholder="+234 812 345 6789"
+                            placeholder="+234 703 891 2407"
                             value={phone}
                             onChange={(e) => setPhone(e.target.value)}
                             border="none"

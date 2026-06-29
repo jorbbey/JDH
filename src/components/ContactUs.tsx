@@ -91,12 +91,12 @@ export const ContactUs: React.FC<ContactUsProps> = ({ onNavigateHome }) => {
                     <MapPin size={20} />
                   </Box>
                   <VStack align="flex-start" spaceY={0.5}>
-                    <Text fontSize="xs" fontWeight="bold" color="black">Central Pickup Hub</Text>
+                    <Text fontSize="xs" fontWeight="bold" color="black">Delivery Locations</Text>
                     <Text fontSize="xs" color="gray.500" fontWeight="medium">
-                      Student Union Building (SUB) Basement Wing A, Campus Main Plaza.
+                      Front of school (for off-klites) and Coe Villa (for hostelites).
                     </Text>
                     <Text fontSize="10px" color="#6B8E23" fontWeight="bold">
-                      📍 Note: There is no individual delivery. All orders must be collected here.
+                      📍 Note: Delivery is conducted exclusively at these two pickup points.
                     </Text>
                   </VStack>
                 </HStack>
@@ -123,7 +123,7 @@ export const ContactUs: React.FC<ContactUsProps> = ({ onNavigateHome }) => {
                   <VStack align="flex-start" spaceY={0.5}>
                     <Text fontSize="xs" fontWeight="bold" color="black">WhatsApp & Helpline</Text>
                     <Text fontSize="xs" color="gray.500">
-                      +234 812 345 6789 (WhatsApp Dispatcher Line)
+                      +234 703 891 2407 (WhatsApp Dispatcher Line)
                     </Text>
                   </VStack>
                 </HStack>

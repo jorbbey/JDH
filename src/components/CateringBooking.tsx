@@ -246,7 +246,7 @@ export const CateringBooking: React.FC<CateringBookingProps> = ({
                     <VStack align="flex-start" spaceY={1}>
                       <Text fontSize="xs" fontWeight="bold" color="gray.600">WhatsApp Phone *</Text>
                       <Input
-                        placeholder="e.g. +234 812 345 6789"
+                        placeholder="e.g. +234 703 891 2407"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         bg="#FAFBF9"

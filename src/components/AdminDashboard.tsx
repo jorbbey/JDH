@@ -901,7 +901,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 fontSize="xs"
               >
                 <Calendar size={15} style={{ marginRight: '8px' }} />
-                2. Weekly Menu Cycles
+                 Weekly Menu Cycles
               </Button>
 
               <Button
@@ -917,7 +917,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 fontSize="xs"
               >
                 <UtensilsCrossed size={15} style={{ marginRight: '8px' }} />
-                3. Meal Creator & Catalog
+                 Meal Creator & Catalog
               </Button>
 
               <Button
@@ -933,7 +933,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 fontSize="xs"
               >
                 <Truck size={15} style={{ marginRight: '8px' }} />
-                4. Logistics & Delivery Days
+                 Logistics & Delivery Days
               </Button>
 
               <Button
@@ -949,7 +949,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 fontSize="xs"
               >
                 <Receipt size={15} style={{ marginRight: '8px' }} />
-                6-9. Order & Receipt Verification
+                 Order & Receipt Verification
               </Button>
 
               <Button
@@ -965,7 +965,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 fontSize="xs"
               >
                 <Briefcase size={15} style={{ marginRight: '8px' }} />
-                10. Catering Requests
+                 Catering Requests
               </Button>
             </VStack>
           </Box>

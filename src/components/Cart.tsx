@@ -55,9 +55,10 @@ export const Cart: React.FC<CartProps> = ({
   onBackToMenu,
   onCheckoutSuccess,
 }) => {
-  const [fullName, setFullName] = useState('');
-  const [phone, setPhone] = useState('');
+  const [fullName, setFullName] = useState(currentUser?.full_name || '');
+  const [phone, setPhone] = useState(currentUser?.phone || '');
   const [whatsappNumber, setWhatsappNumber] = useState('');
+  const [deliveryLocation, setDeliveryLocation] = useState('Front of school (for off-klites)');
   
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -95,7 +96,7 @@ export const Cart: React.FC<CartProps> = ({
         customer_name: fullName.trim(),
         customer_phone: phone.trim(),
         customer_whatsapp: whatsappNumber.trim() || undefined,
-        hostel_name: 'Central Pickup Hub',
+        hostel_name: deliveryLocation,
         room_number: 'N/A',
         notes: `Details: ${cartItems.map((i) => i.notes).filter(Boolean).join('; ') || 'None'}`,
         items: itemsInput,
@@ -297,7 +298,7 @@ export const Cart: React.FC<CartProps> = ({
                 <VStack align="flex-start" spaceY={1}>
                   <Text fontSize="10.5px" fontWeight="bold" color="gray.500">Phone Number *</Text>
                   <Input
-                    placeholder="e.g. +234 812 345 6789"
+                    placeholder="e.g. +234 703 891 2407"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     bg="#FAFAF7"
@@ -314,7 +315,7 @@ export const Cart: React.FC<CartProps> = ({
                 <VStack align="flex-start" spaceY={1}>
                   <Text fontSize="10.5px" fontWeight="bold" color="gray.500">WhatsApp Number (Optional)</Text>
                   <Input
-                    placeholder="e.g. +234 812 345 6789"
+                    placeholder="e.g. +234 703 891 2407"
                     value={whatsappNumber}
                     onChange={(e) => setWhatsappNumber(e.target.value)}
                     bg="#FAFAF7"
@@ -327,8 +328,44 @@ export const Cart: React.FC<CartProps> = ({
                   <Text fontSize="9px" color="gray.500">If different from your primary phone number above.</Text>
                 </VStack>
 
+                <VStack align="flex-start" spaceY={2.5}>
+                  <Text fontSize="10.5px" fontWeight="bold" color="gray.500">Delivery Location *</Text>
+                  <Grid templateColumns="1fr 1fr" gap={3} w="full">
+                    <Box
+                      onClick={() => setDeliveryLocation('Front of school (for off-klites)')}
+                      cursor="pointer"
+                      p={3.5}
+                      bg={deliveryLocation === 'Front of school (for off-klites)' ? '#FFF8F0' : '#FAFAF7'}
+                      borderWidth="1.5px"
+                      borderColor={deliveryLocation === 'Front of school (for off-klites)' ? '#C65D3A' : 'gray.200'}
+                      borderRadius="2xl"
+                      textAlign="center"
+                      transition="all 0.2s"
+                      _hover={{ borderColor: '#C65D3A' }}
+                    >
+                      <Text fontSize="xs" fontWeight="bold" color="black">Front of School</Text>
+                      <Text fontSize="9px" color="gray.500" mt={0.5}>For off-klites</Text>
+                    </Box>
+                    <Box
+                      onClick={() => setDeliveryLocation('Coe Villa (for hostelites)')}
+                      cursor="pointer"
+                      p={3.5}
+                      bg={deliveryLocation === 'Coe Villa (for hostelites)' ? '#FFF8F0' : '#FAFAF7'}
+                      borderWidth="1.5px"
+                      borderColor={deliveryLocation === 'Coe Villa (for hostelites)' ? '#C65D3A' : 'gray.200'}
+                      borderRadius="2xl"
+                      textAlign="center"
+                      transition="all 0.2s"
+                      _hover={{ borderColor: '#C65D3A' }}
+                    >
+                      <Text fontSize="xs" fontWeight="bold" color="black">Coe Villa</Text>
+                      <Text fontSize="9px" color="gray.500" mt={0.5}>For hostelites</Text>
+                    </Box>
+                  </Grid>
+                </VStack>
+
                 <Box bg="#FFF8F0" p={3.5} borderRadius="xl" borderWidth="1px" borderColor="#C65D3A" fontSize="10px" color="black" fontWeight="medium">
-                  📌 <strong>Central Pickup Location:</strong> All orders are collected centrally at the Student Union Building (SUB) Basement Wing A. No individual hostel deliveries are conducted.
+                  📌 <strong>Delivery Option:</strong> All orders are delivered directly to your selected point (<strong>Front of school</strong> for off-klites or <strong>Coe Villa</strong> for hostelites).
                 </Box>
               </VStack>
 

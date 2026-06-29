@@ -32,7 +32,7 @@ const MOCK_CATERINGS: CateringDetailedItem[] = [
     profiles: {
       full_name: 'Damilola Adebayo',
       email: 'student@campus.edu',
-      phone: '+234 812 345 6789',
+      phone: '+234 703 891 2407',
     },
   },
 ];

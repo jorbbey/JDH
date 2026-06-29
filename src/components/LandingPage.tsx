@@ -23,6 +23,8 @@ import pepperedChickenImg from '../assets/peppered kitche.jpg';
 import foodCollageImg from '../assets/food collage.png';
 import logisticsImg from '../assets/logistics.png';
 import logisticsRealImg from '../assets/logistics-real.png';
+import firstImg from '../assets/first_img.png';
+import secondImg from '../assets/second_img.png';
 import {
   User,
   MapPin,
@@ -806,24 +808,24 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         <Container maxW="90%">
           <Grid templateColumns={{ base: '1fr', lg: '0.9fr 1.1fr' }} gap={16} alignItems="center">
             
-            {/* Left Graphic: Chef inside circle matching screenshot */}
+            {/* Left Graphic: Gourmet meal layout card frame */}
             <Box display="flex" justifyContent="center" alignItems="center" position="relative">
-              {/* Spinning background vegetables visual decor */}
+              {/* background visual decor */}
               <Box 
                 position="absolute"
                 w="105%"
                 h="105%"
-                borderRadius="full"
+                borderRadius="3xl"
                 borderWidth="1.5px"
                 borderStyle="dashed"
                 borderColor="rgba(107, 142, 35, 0.2)"
                 zIndex={0}
               />
-              {/* Chef Image Core Circle */}
+              {/* Gourmet Image Core Frame */}
               <Box 
-                w={{ base: '280px', md: '440px' }} 
-                h={{ base: '280px', md: '440px' }} 
-                borderRadius="full" 
+                w={{ base: '260px', sm: '320px', md: '440px' }} 
+                h={{ base: '260px', sm: '320px', md: '440px' }} 
+                borderRadius="3xl" 
                 overflow="hidden" 
                 borderWidth="8px"
                 borderColor="white"
@@ -832,19 +834,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               >
                 <Box 
                   as="img"
-                  src={logisticsImg}
-                  alt="JDH Kitchen logistics network"
+                  src="https://lgkljlcnqcwqoauymlyi.supabase.co/storage/v1/object/public/public-images/first_img.png"
+                  alt="JDH Kitchen services and meals"
                   w="full"
                   h="full"
                   objectFit="cover"
+                  referrerPolicy="no-referrer"
                 />
               </Box>
 
               {/* Floating Emojis mimicking floating food ingredients */}
-              <Box position="absolute" top="10%" left="5%" fontSize="3xl" zIndex={2}>🥬</Box>
-              <Box position="absolute" bottom="15%" left="8%" fontSize="3xl" zIndex={2}>🍅</Box>
-              <Box position="absolute" top="15%" right="6%" fontSize="3xl" zIndex={2}>🌶️</Box>
-              <Box position="absolute" bottom="8%" right="12%" fontSize="3xl" zIndex={2}>🍳</Box>
+              <Box position="absolute" top="-10%" left="-5%" fontSize={{base: 'xl', md: '2xl', lg: '3xl'}} zIndex={2}>🥬</Box>
+              <Box position="absolute" bottom="-10%" left="-5%" fontSize={{base: 'xl', md: '2xl', lg: '3xl'}} zIndex={2}>🍅</Box>
+              <Box position="absolute" top="-10%" right="-5%" fontSize={{base: 'xl', md: '2xl', lg: '3xl'}} zIndex={2}>🌶️</Box>
+              <Box position="absolute" bottom="-10%" right="-5%" fontSize={{base: 'xl', md: '2xl', lg: '3xl'}} zIndex={2}>🍳</Box>
             </Box>
 
             {/* Right Information Pack */}
@@ -853,7 +856,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 About Our Service
               </Text>
               <Heading as="h2" size="2xl" fontWeight="950" color="black" letterSpacing="-0.03em" lineHeight="1.15">
-                More Than Just<br />
+                More Than Just
                 Food Delivery
               </Heading>
               
@@ -862,7 +865,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               </Text>
 
               {/* Grid bullet services matching layout of Bites exactly */}
-              <Grid templateColumns="repeat(2, 1fr)" gap={6} w="full" pt={4}>
+              <Grid templateColumns={{ base: '1fr', sm: 'repeat(2, 1fr)' }} gap={6} w="full" pt={4}>
                 <ServiceBullet icon="📲" title="Easy Online Ordering" desc="Place your orders conveniently from anywhere." />
                 <ServiceBullet icon="📅" title="Weekly Reservations" desc="Reserve your meals ahead of time to secure your spot." />
                 <ServiceBullet icon="⏰" title="Real-Time Updates" desc="Stay informed about active meal orders and pickup schedules." />
@@ -1053,12 +1056,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             <Grid templateColumns={{ base: '1fr', lg: '1.2fr 0.8fr' }} gap={12} alignItems="center" position="relative" zIndex={1}>
               <VStack align="flex-start" spaceY={5}>
                 <Heading as="h2" size="2xl" fontWeight="950" color="black" letterSpacing="-0.03em" lineHeight="1.15">
-                  Do You Have Any Dinner<br />
-                  Plan Today? Reserve<br />
-                  Your Table
+                  Planning a Special Event?<br />
+                  Let JDH Kitchen Handle the Food
                 </Heading>
                 <Text fontSize="sm" color="gray.500" maxW="xl" lineHeight="relaxed">
-                  Planning an event on campus, hostel dinner, or student association banquet? JDH Kitchen offers premium bulk catering delivery services. Check active batch schedules, choose classic swallows or party jollof, and secure your dining.
+                  Whether it's a birthday celebration, departmental meeting, fellowship, hostel get-together, or student association event, JDH Kitchen provides freshly prepared meals in bulk to make your event memorable.
                 </Text>
                 
                 <Button 
@@ -1076,26 +1078,27 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 </Button>
               </VStack>
 
-              {/* Right Side: Circular top-down bowl of stew matching banner in design */}
+              {/* Right Side: Elegant rounded card frame matching banner in design */}
               <Flex justify="center">
                 <Box 
-                  w={{ base: '220px', md: '340px' }} 
-                  h={{ base: '220px', md: '340px' }} 
-                  borderRadius="full" 
+                  w={{ base: '240px', sm: '280px', md: '360px' }} 
+                  h={{ base: '240px', sm: '280px', md: '360px' }} 
+                  borderRadius="3xl" 
                   bg="white" 
-                  p={3}
-                  boxShadow="xl"
+                  p={3.5}
+                  boxShadow="2xl"
                   borderWidth="1px"
                   borderColor="gray.100"
                 >
                   <Box 
                     as="img"
-                    src={logisticsRealImg}
-                    alt="JDH Kitchen Reservation Map or Image"
+                    src="https://lgkljlcnqcwqoauymlyi.supabase.co/storage/v1/object/public/public-images/second_img.png"
+                    alt="JDH Kitchen Special Event Catering"
                     w="full"
                     h="full"
                     objectFit="cover"
-                    borderRadius="full"
+                    borderRadius="2xl"
+                    referrerPolicy="no-referrer"
                   />
                 </Box>
               </Flex>
@@ -1866,7 +1869,7 @@ interface ServiceBulletProps {
 
 const ServiceBullet: React.FC<ServiceBulletProps> = ({ icon, title, desc }) => (
   <HStack spaceX={3.5} align="flex-start">
-    <Box p={2.5} bg="white" borderRadius="full" shadow="sm" borderHeight="1px" borderColor="gray.150" fontSize="lg">
+    <Box p={2.5} bg="white" borderRadius="full" shadow="sm" borderWidth="1px" borderColor="gray.150" fontSize="lg">
       {icon}
     </Box>
     <VStack align="flex-start" spaceY={0}>

@@ -364,19 +364,28 @@ export default function App() {
                   </Button>
                 )}
 
-                {currentUser && currentUser.role === 'admin' ? (
+                {currentUser && currentUser.role === 'admin' && (
+                  <Button
+                    bg="red.600"
+                    color="white"
+                    _hover={{ bg: 'red.700' }}
+                    size="sm"
+                    onClick={() => setCurrentView('admin-dashboard')}
+                    fontWeight="bold"
+                    borderRadius="lg"
+                  >
+                    Admin panel
+                  </Button>
+                )}
+
+                {/* Dynamic User Login / Registration Controls */}
+                {currentUser ? (
                   <Flex align="center" gap={{ base: 1, md: 2 }}>
-                    <Button
-                      bg="red.600"
-                      color="white"
-                      _hover={{ bg: 'red.700' }}
-                      size="sm"
-                      onClick={() => setCurrentView('admin-dashboard')}
-                      fontWeight="bold"
-                      borderRadius="lg"
-                    >
-                      Admin Panel
-                    </Button>
+                    <Box px={3} py={1.5} bg="gray.100" borderRadius="xl" maxW="150px" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">
+                      <Text fontSize="xs" fontWeight="extrabold" color="black">
+                        👤 {currentUser.full_name?.split(' ')[0] || 'Admin'}
+                      </Text>
+                    </Box>
                     <Button
                       variant="ghost"
                       color="red.600"
@@ -517,38 +526,44 @@ export default function App() {
                   </Button>
 
                   {currentUser && currentUser.role === 'admin' && (
-                    <VStack align="stretch" spaceY={2} w="full">
+                    <Button
+                      bg="red.650"
+                      color="white"
+                      _hover={{ bg: 'red.700' }}
+                      size="sm"
+                      fontWeight="bold"
+                      onClick={() => {
+                        setCurrentView('admin-dashboard');
+                        setIsMobileMenuOpen(false);
+                      }}
+                      w="full"
+                      justifyContent="flex-start"
+                    >
+                      Admin Panel
+                    </Button>
+                  )}
+
+                  {currentUser && (
+                    <Flex align="center" gap={2} p={2} bg="gray.50" borderRadius="xl">
+                      <Box flex="1" overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap">
+                        <Text fontSize="xs" fontWeight="extrabold" color="black">
+                          👤 {currentUser.full_name || 'Admin'}
+                        </Text>
+                      </Box>
                       <Button
-                        bg="red.600"
-                        color="white"
-                        _hover={{ bg: 'red.700' }}
-                        size="sm"
-                        fontWeight="bold"
-                        onClick={() => {
-                          setCurrentView('admin-dashboard');
-                          setIsMobileMenuOpen(false);
-                        }}
-                        w="full"
-                        justifyContent="flex-start"
-                      >
-                        Admin Panel
-                      </Button>
-                      <Button
-                        size="sm"
+                        size="xs"
                         variant="ghost"
                         color="red.600"
-                        _hover={{ bg: 'red.50' }}
+                        _hover={{ bg: 'red.100' }}
                         onClick={() => {
                           handleLogOutGlobal();
                           setIsMobileMenuOpen(false);
                         }}
                         fontWeight="bold"
-                        w="full"
-                        justifyContent="flex-start"
                       >
-                        Sign Out (Admin)
+                        Sign Out
                       </Button>
-                    </VStack>
+                    </Flex>
                   )}
                 </VStack>
               </Box>
