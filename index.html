@@ -58,15 +58,41 @@
     <!-- Register service worker -->
     <script>
       if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then((registration) => {
-              console.log('JDH Kitchen SW registered successfully:', registration.scope);
-            })
-            .catch((err) => {
-              console.error('JDH Kitchen SW registration failed:', err);
+        const isDev = window.location.hostname === 'localhost' || 
+                      window.location.hostname.includes('127.0.0.1') || 
+                      window.location.hostname.includes('europe-west2.run.app') || 
+                      window.location.hostname.includes('aistudio') ||
+                      window.location.port !== '';
+
+        if (isDev) {
+          if ('caches' in window) {
+            caches.keys().then((names) => {
+              for (let name of names) {
+                caches.delete(name);
+              }
             });
-        });
+          }
+          navigator.serviceWorker.getRegistrations().then((registrations) => {
+            for (let registration of registrations) {
+              registration.unregister().then((success) => {
+                if (success) {
+                  console.log('Unregistered development service worker to avoid stale React chunk caching.');
+                  window.location.reload();
+                }
+              });
+            }
+          });
+        } else {
+          window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+              .then((registration) => {
+                console.log('JDH Kitchen SW registered successfully:', registration.scope);
+              })
+              .catch((err) => {
+                console.error('JDH Kitchen SW registration failed:', err);
+              });
+          });
+        }
       }
     </script>
   </body>
