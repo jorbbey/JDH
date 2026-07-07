@@ -36,6 +36,7 @@ import {
   Search,
   FileSpreadsheet,
   X,
+  RefreshCw,
 } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { authService } from '../services/auth';
@@ -44,6 +45,9 @@ import { mealService } from '../services/meals';
 import { orderService } from '../services/orders';
 import { cateringService } from '../services/catering';
 import { paymentService } from '../services/payment';
+import { proteinService, ExtraOption } from '../services/proteins';
+
+
 
 interface AdminDashboardProps {
   currentUser: any;
@@ -60,7 +64,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
-  const [activeTab, setActiveTab ] = useState<'overview' | 'menus' | 'meals' | 'schedules' | 'orders' | 'catering'>('overview');
+  const [activeTab, setActiveTab ] = useState<'overview' | 'menus' | 'meals' | 'schedules' | 'orders' | 'catering' | 'proteins'>('overview');
 
   // Feature 2: Weekly Menu Management states
   const [weeklyMenus, setWeeklyMenus] = useState<any[]>([]);
@@ -173,6 +177,20 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [cateringQuotePrice, setCateringQuotePrice] = useState('');
   const [cateringActionMessage, setCateringActionMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
+  // Proteins & Extras management states
+  const [proteinsList, setProteinsList] = useState<ExtraOption[]>([]);
+  const [isLoadingProteins, setIsLoadingProteins] = useState(false);
+  const [proteinFormId, setProteinFormId] = useState('');
+  const [proteinFormName, setProteinFormName] = useState('');
+  const [proteinFormPrice, setProteinFormPrice] = useState('');
+  const [proteinActionMessage, setProteinActionMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // Non-blocking sandbox-safe confirmation helper states
+  const [proteinConfirmDeleteId, setProteinConfirmDeleteId] = useState<string | null>(null);
+  const [decoupleConfirmMealId, setDecoupleConfirmMealId] = useState<string | null>(null);
+  const [deleteConfirmMealId, setDeleteConfirmMealId] = useState<string | null>(null);
+
+
   // Verify the user is actually an admin, otherwise prompt authenticated login
   const isAdmin = currentUser && currentUser.role === 'admin';
 
@@ -212,6 +230,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     }
   }, [mealActionMsgStyle]);
 
+  useEffect(() => {
+    if (proteinActionMessage) {
+      const timer = setTimeout(() => setProteinActionMessage(null), 6000);
+      return () => clearTimeout(timer);
+    }
+  }, [proteinActionMessage]);
+
+
   // Fetch all menu cycles & catalog on load or tab switch
   useEffect(() => {
     if (isAdmin) {
@@ -221,9 +247,24 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         loadOrders();
       } else if (activeTab === 'catering') {
         loadCaterings();
+      } else if (activeTab === 'proteins') {
+        loadProteins();
       }
     }
   }, [currentUser, activeTab]);
+
+  const loadProteins = async () => {
+    setIsLoadingProteins(true);
+    try {
+      const data = await proteinService.getProteinOptions();
+      setProteinsList(data);
+    } catch (err: any) {
+      console.error('Error loading proteins list:', err);
+    } finally {
+      setIsLoadingProteins(false);
+    }
+  };
+
 
   const loadWeeklyMenus = async () => {
     setIsLoadingMenus(true);
@@ -483,6 +524,68 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     }
   };
 
+  // Proteins & Extras CRUD handlers
+  const handleSaveProteinOption = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!proteinFormName || !proteinFormPrice) {
+      setProteinActionMessage({ type: 'error', text: 'Please fill in name and price.' });
+      return;
+    }
+
+    const priceNum = parseFloat(proteinFormPrice);
+    if (isNaN(priceNum) || priceNum < 0) {
+      setProteinActionMessage({ type: 'error', text: 'Please enter a valid price (>= 0).' });
+      return;
+    }
+
+    setIsLoadingProteins(true);
+    try {
+      const optionId = proteinFormId || 'opt-' + proteinFormName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      const option = {
+        id: optionId,
+        name: proteinFormName,
+        price: priceNum,
+      };
+
+      await proteinService.saveProteinOption(option);
+      setProteinActionMessage({ type: 'success', text: `Successfully saved "${proteinFormName}".` });
+      
+      setProteinFormId('');
+      setProteinFormName('');
+      setProteinFormPrice('');
+      await loadProteins();
+    } catch (err: any) {
+      setProteinActionMessage({ type: 'error', text: err?.message || 'Failed to save option.' });
+    } finally {
+      setIsLoadingProteins(false);
+    }
+  };
+
+  const handleEditProteinClick = (opt: any) => {
+    setProteinFormId(opt.id);
+    setProteinFormName(opt.name);
+    setProteinFormPrice(opt.price.toString());
+  };
+
+  const handleCancelProteinEdit = () => {
+    setProteinFormId('');
+    setProteinFormName('');
+    setProteinFormPrice('');
+  };
+
+  const handleDeleteProteinOption = async (id: string) => {
+    setIsLoadingProteins(true);
+    try {
+      await proteinService.deleteProteinOption(id);
+      setProteinActionMessage({ type: 'success', text: 'Successfully deleted option.' });
+      await loadProteins();
+    } catch (err: any) {
+      setProteinActionMessage({ type: 'error', text: err?.message || 'Failed to delete option.' });
+    } finally {
+      setIsLoadingProteins(false);
+    }
+  };
+
   const handleCreateWeeklyMenu = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newStartDate || !newEndDate) {
@@ -542,10 +645,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   };
 
   const handleRemoveMealFromMenu = async (menuMealId: string) => {
-    if (!window.confirm('Are you absolutely sure you want to decouple this dish from this week\'s active menu?')) {
-      return;
-    }
-
     setMenuActionMessage(null);
     try {
       await menuService.removeMealFromMenu(menuMealId);
@@ -625,9 +724,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   };
 
   const handleDeleteMealFromCatalog = async (id: string, name: string) => {
-    if (!window.confirm(`Are you sure you want to permanently erase "${name}" from the global food catalog?`)) {
-      return;
-    }
     setMealActionMsgStyle(null);
     try {
       await mealService.deleteMeal(id);
@@ -918,6 +1014,22 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               >
                 <UtensilsCrossed size={15} style={{ marginRight: '8px' }} />
                  Meal Creator & Catalog
+              </Button>
+
+              <Button
+                variant={activeTab === 'proteins' ? 'solid' : 'ghost'}
+                bg={activeTab === 'proteins' ? '#C65D3A' : 'transparent'}
+                color={activeTab === 'proteins' ? 'white' : 'gray.600'}
+                _hover={{ bg: activeTab === 'proteins' ? '#A94B2B' : '#FFF8F0', color: activeTab === 'proteins' ? 'white' : 'black' }}
+                justifyContent="flex-start"
+                size="md"
+                borderRadius="xl"
+                onClick={() => setActiveTab('proteins')}
+                fontWeight="semibold"
+                fontSize="xs"
+              >
+                <Sliders size={15} style={{ marginRight: '8px' }} />
+                 Protein & Extras Menu
               </Button>
 
               <Button
@@ -1405,18 +1517,51 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                           {mm.min_threshold} units
                                         </Text>
                                       </VStack>
-                                      <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        colorScheme="red"
-                                        color="red.600"
-                                        p={1.5}
-                                        borderRadius="lg"
-                                        _hover={{ bg: 'red.50' }}
-                                        onClick={() => handleRemoveMealFromMenu(mm.menu_meal_id)}
-                                      >
-                                        <Trash2 size={15} />
-                                      </Button>
+                                      {decoupleConfirmMealId === mm.menu_meal_id ? (
+                                        <HStack spaceX={1}>
+                                          <Button
+                                            size="xs"
+                                            bg="red.600"
+                                            color="white"
+                                            _hover={{ bg: 'red.700' }}
+                                            borderRadius="md"
+                                            px={2}
+                                            py={1}
+                                            fontSize="9px"
+                                            fontWeight="bold"
+                                            onClick={() => {
+                                              handleRemoveMealFromMenu(mm.menu_meal_id);
+                                              setDecoupleConfirmMealId(null);
+                                            }}
+                                          >
+                                            Confirm Decouple
+                                          </Button>
+                                          <Button
+                                            size="xs"
+                                            variant="ghost"
+                                            color="gray.500"
+                                            _hover={{ bg: 'gray.100' }}
+                                            borderRadius="md"
+                                            p={1}
+                                            onClick={() => setDecoupleConfirmMealId(null)}
+                                          >
+                                            <X size={14} />
+                                          </Button>
+                                        </HStack>
+                                      ) : (
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          colorScheme="red"
+                                          color="red.600"
+                                          p={1.5}
+                                          borderRadius="lg"
+                                          _hover={{ bg: 'red.50' }}
+                                          onClick={() => setDecoupleConfirmMealId(mm.menu_meal_id)}
+                                        >
+                                          <Trash2 size={15} />
+                                        </Button>
+                                      )}
                                     </HStack>
                                   </Flex>
                                 </Box>
@@ -1840,19 +1985,52 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                     Modify
                                   </Button>
                                   
-                                  <Button
-                                    size="xs"
-                                    variant="ghost"
-                                    colorScheme="red"
-                                    color="red.600"
-                                    _hover={{ bg: 'red.50' }}
-                                    fontWeight="bold"
-                                    borderRadius="lg"
-                                    onClick={() => handleDeleteMealFromCatalog(meal.id, meal.name)}
-                                  >
-                                    <Trash2 size={12} style={{ marginRight: '4px' }} />
-                                    Delete
-                                  </Button>
+                                  {deleteConfirmMealId === meal.id ? (
+                                    <HStack spaceX={1}>
+                                      <Button
+                                        size="xs"
+                                        bg="red.600"
+                                        color="white"
+                                        _hover={{ bg: 'red.700' }}
+                                        borderRadius="md"
+                                        px={2}
+                                        py={1}
+                                        fontSize="10px"
+                                        fontWeight="bold"
+                                        onClick={() => {
+                                          handleDeleteMealFromCatalog(meal.id, meal.name);
+                                          setDeleteConfirmMealId(null);
+                                        }}
+                                      >
+                                        Confirm Delete
+                                      </Button>
+                                      <Button
+                                        size="xs"
+                                        variant="ghost"
+                                        color="gray.500"
+                                        _hover={{ bg: 'gray.100' }}
+                                        borderRadius="md"
+                                        p={1}
+                                        onClick={() => setDeleteConfirmMealId(null)}
+                                      >
+                                        <X size={14} />
+                                      </Button>
+                                    </HStack>
+                                  ) : (
+                                    <Button
+                                      size="xs"
+                                      variant="ghost"
+                                      colorScheme="red"
+                                      color="red.600"
+                                      _hover={{ bg: 'red.50' }}
+                                      fontWeight="bold"
+                                      borderRadius="lg"
+                                      onClick={() => setDeleteConfirmMealId(meal.id)}
+                                    >
+                                      <Trash2 size={12} style={{ marginRight: '4px' }} />
+                                      Delete
+                                    </Button>
+                                  )}
                                 </HStack>
                               </HStack>
                             </VStack>
@@ -2732,7 +2910,257 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 </Grid>
               </VStack>
             )}
+
+            {activeTab === 'proteins' && (
+              <VStack spaceY={8} align="stretch">
+                <Flex justify="space-between" align="center" flexWrap="wrap" gap={4}>
+                  <Box>
+                    <Heading as="h2" size="xl" fontWeight="black" color="black" letterSpacing="tight" mb={1}>
+                      Protein & Extras Management
+                    </Heading>
+                    <Text fontSize="xs" color="gray.500">
+                      Manage the selectable custom additions (proteins, swallow portions, extras) presented to customers during purchase (Feature 14).
+                    </Text>
+                  </Box>
+                  <Button
+                    size="xs"
+                    variant="outline"
+                    borderColor="gray.200"
+                    color="gray.600"
+                    _hover={{ bg: 'gray.50' }}
+                    borderRadius="lg"
+                    onClick={loadProteins}
+                    isLoading={isLoadingProteins}
+                    display="flex"
+                    alignItems="center"
+                    gap={1.5}
+                  >
+                    <RefreshCw size={12} />
+                    Sync Options
+                  </Button>
+                </Flex>
+
+                {proteinActionMessage && (
+                  <Box
+                    p={4}
+                    borderRadius="2xl"
+                    borderWidth="1px"
+                    borderColor={proteinActionMessage.type === 'success' ? 'green.155' : 'red.155'}
+                    bg={proteinActionMessage.type === 'success' ? 'green.50' : 'red.50'}
+                    color={proteinActionMessage.type === 'success' ? 'green.800' : 'red.800'}
+                  >
+                    <Text fontSize="xs" fontWeight="bold">
+                      {proteinActionMessage.text}
+                    </Text>
+                  </Box>
+                )}
+
+                <Grid templateColumns={{ base: '1fr', lg: '1.2fr 1.8fr' }} gap={8}>
+                  {/* Left Column: Create or Edit Form */}
+                  <Box bg="white" p={6} borderRadius="3xl" borderWidth="1px" borderColor="gray.250">
+                    <Heading as="h3" size="sm" fontWeight="black" color="black" mb={5}>
+                      {proteinFormId ? 'Modify Option' : 'Register New Option'}
+                    </Heading>
+
+                    <form onSubmit={handleSaveProteinOption}>
+                      <VStack spaceY={4} align="stretch">
+                        <Box>
+                          <Text as="label" fontSize="11px" fontWeight="black" color="gray.500" mb={1.5} display="block">
+                            OPTION NAME
+                          </Text>
+                          <Input
+                            placeholder="e.g. Peppered Turkey"
+                            value={proteinFormName}
+                            onChange={(e) => setProteinFormName(e.target.value)}
+                            bg="gray.25"
+                            borderColor="gray.200"
+                            borderRadius="2xl"
+                            h="44px"
+                            fontSize="xs"
+                            fontWeight="medium"
+                            _focus={{ borderColor: '#C65D3A', bg: 'white' }}
+                            required
+                          />
+                        </Box>
+
+                        <Box>
+                          <Text as="label" fontSize="11px" fontWeight="black" color="gray.500" mb={1.5} display="block">
+                            PRICE (₦)
+                          </Text>
+                          <Input
+                            type="number"
+                            placeholder="e.g. 1500"
+                            value={proteinFormPrice}
+                            onChange={(e) => setProteinFormPrice(e.target.value)}
+                            bg="gray.25"
+                            borderColor="gray.200"
+                            borderRadius="2xl"
+                            h="44px"
+                            fontSize="xs"
+                            fontWeight="medium"
+                            _focus={{ borderColor: '#C65D3A', bg: 'white' }}
+                            required
+                          />
+                        </Box>
+
+                        {proteinFormId && (
+                          <Box bg="gray.50" p={3} borderRadius="2xl" borderWidth="1px" borderColor="gray.150">
+                            <Text fontSize="10px" fontWeight="bold" color="gray.400">OPTION IDENTIFIER</Text>
+                            <Text fontSize="11px" fontFamily="mono" color="gray.700" mt={0.5}>
+                              {proteinFormId}
+                            </Text>
+                          </Box>
+                        )}
+
+                        <HStack spaceX={3} pt={2}>
+                          <Button
+                            type="submit"
+                            bg="#C65D3A"
+                            color="white"
+                            _hover={{ bg: '#A94B2B' }}
+                            borderRadius="2xl"
+                            fontSize="xs"
+                            fontWeight="bold"
+                            flex={1}
+                            h="44px"
+                            isLoading={isLoadingProteins}
+                          >
+                            {proteinFormId ? 'Save Changes' : 'Add to Extras'}
+                          </Button>
+                          {proteinFormId && (
+                            <Button
+                              variant="ghost"
+                              borderColor="gray.200"
+                              borderWidth="1px"
+                              _hover={{ bg: 'gray.50' }}
+                              borderRadius="2xl"
+                              fontSize="xs"
+                              fontWeight="bold"
+                              onClick={handleCancelProteinEdit}
+                              h="44px"
+                            >
+                              Cancel
+                            </Button>
+                          )}
+                        </HStack>
+                      </VStack>
+                    </form>
+                  </Box>
+
+                  {/* Right Column: List of Current Options */}
+                  <Box bg="white" p={6} borderRadius="3xl" borderWidth="1px" borderColor="gray.250">
+                    <Heading as="h3" size="sm" fontWeight="black" color="black" mb={5}>
+                      Active Protein & Extra Options ({proteinsList.length})
+                    </Heading>
+
+                    {isLoadingProteins && proteinsList.length === 0 ? (
+                      <VStack py={12} justify="center" align="center">
+                        <Text fontSize="xs" color="gray.400" mt={2}>Loading extra options...</Text>
+                      </VStack>
+                    ) : proteinsList.length === 0 ? (
+                      <VStack py={12} justify="center" align="center" textAlign="center" bg="gray.25" borderRadius="3xl" borderWidth="1px" borderStyle="dashed" borderColor="gray.200">
+                        <Sliders size={24} color="gray" />
+                        <Text fontSize="xs" fontWeight="semibold" color="gray.400" mt={2}>
+                          No extra options found.
+                        </Text>
+                      </VStack>
+                    ) : (
+                      <VStack align="stretch" spaceY={3} maxH="550px" overflowY="auto" pr={1}>
+                        {proteinsList.map((opt) => (
+                          <Flex
+                            key={opt.id}
+                            p={4}
+                            borderRadius="2xl"
+                            borderWidth="1px"
+                            borderColor="gray.150"
+                            bg="gray.25"
+                            justify="space-between"
+                            align="center"
+                            _hover={{ bg: 'gray.50' }}
+                            transition="all 0.15s ease"
+                          >
+                            <Box>
+                              <Text fontSize="xs" fontWeight="black" color="black">
+                                {opt.name}
+                              </Text>
+                              <Text fontSize="10px" fontFamily="mono" color="gray.400" mt={0.5}>
+                                ID: {opt.id}
+                              </Text>
+                            </Box>
+                            <HStack spaceX={4}>
+                              <Text fontSize="xs" fontWeight="bold" color="#C65D3A">
+                                ₦{opt.price.toLocaleString()}
+                              </Text>
+                              <HStack spaceX={1.5}>
+                                <Button
+                                  size="xs"
+                                  variant="ghost"
+                                  color="blue.600"
+                                  _hover={{ bg: 'blue.50' }}
+                                  borderRadius="md"
+                                  p={1}
+                                  onClick={() => handleEditProteinClick(opt)}
+                                >
+                                  <Edit size={14} />
+                                </Button>
+                                {proteinConfirmDeleteId === opt.id ? (
+                                  <HStack spaceX={1}>
+                                    <Button
+                                      size="xs"
+                                      bg="red.600"
+                                      color="white"
+                                      _hover={{ bg: 'red.700' }}
+                                      borderRadius="md"
+                                      px={2.5}
+                                      py={1}
+                                      h="24px"
+                                      fontSize="9px"
+                                      fontWeight="bold"
+                                      onClick={() => {
+                                        handleDeleteProteinOption(opt.id);
+                                        setProteinConfirmDeleteId(null);
+                                      }}
+                                    >
+                                      Confirm Delete
+                                    </Button>
+                                    <Button
+                                      size="xs"
+                                      variant="ghost"
+                                      color="gray.500"
+                                      _hover={{ bg: 'gray.100' }}
+                                      borderRadius="md"
+                                      p={1}
+                                      h="24px"
+                                      onClick={() => setProteinConfirmDeleteId(null)}
+                                    >
+                                      <X size={14} />
+                                    </Button>
+                                  </HStack>
+                                ) : (
+                                  <Button
+                                    size="xs"
+                                    variant="ghost"
+                                    color="red.600"
+                                    _hover={{ bg: 'red.50' }}
+                                    borderRadius="md"
+                                    p={1}
+                                    onClick={() => setProteinConfirmDeleteId(opt.id)}
+                                  >
+                                    <Trash2 size={14} />
+                                  </Button>
+                                )}
+                              </HStack>
+                            </HStack>
+                          </Flex>
+                        ))}
+                      </VStack>
+                    )}
+                  </Box>
+                </Grid>
+              </VStack>
+            )}
           </Box>
+
         </Grid>
       </Container>
 

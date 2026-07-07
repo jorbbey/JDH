@@ -21,10 +21,7 @@ import friedRiceImg from '../assets/Fried Rice.jpg';
 import ogbonoImg from '../assets/ogbono soup.jpg';
 import pepperedChickenImg from '../assets/peppered kitche.jpg';
 import foodCollageImg from '../assets/food collage.png';
-import logisticsImg from '../assets/logistics.png';
-import logisticsRealImg from '../assets/logistics-real.png';
-import firstImg from '../assets/first_img.png';
-import secondImg from '../assets/second_img.png';
+
 import {
   User,
   MapPin,
@@ -455,7 +452,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     <Box minH="100vh" bg="#FFFBF7" color="#2D2D2D" fontFamily="Inter, sans-serif">
       
       {/* 1. HERO SECTION: STUNNING BRAND COOP BENTO (REPLICATING BITES DESIGN) */}
-      <Box py={{ base: 12, md: 24 }} px={4} position="relative" overflow="hidden">
+      <Box py={{ base: 12, md: 24 }} px={{ base: 2, md: 4 }} position="relative" overflow="hidden">
         {/* Soft elegant floating vector-like circles matching Bites */}
         <Box 
           position="absolute" 
@@ -478,8 +475,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           filter="blur(60px)" 
         />
 
-        <Container maxW="95%">
-          <Grid templateColumns={{ base: '1fr', lg: '1.2fr 0.8fr' }} gap={16} alignItems="center">
+        <Container maxW={{ base: "100%", md: "95%" }} px={{ base: 3, md: 4 }}>
+          <Grid templateColumns={{ base: '1fr', lg: '1.2fr 0.8fr' }} gap={{ base: 8, lg: 16 }} alignItems="center">
             
             {/* Left Content Column */}
             <VStack align="flex-start" spaceY={6}>
@@ -570,7 +567,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               >
                 <Box 
                   as="img"
-                  src={foodCollageImg}
+                  src="https://lgkljlcnqcwqoauymlyi.supabase.co/storage/v1/object/public/public-images/food%20collage.png"
                   alt="JDH Featured Food Collage"
                   w="95%"
                   h="95%"
@@ -602,8 +599,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       </Box>
 
       {/* 2. CHALICE/BENEFITS GRID */}
-      <Container maxW="90%" py={12} px={4}>
-        <Grid templateColumns={{ base: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }} gap={8}>
+      <Container maxW={{ base: "100%", md: "90%" }} py={12} px={{ base: 3, md: 4 }}>
+        <Grid templateColumns={{ base: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }} gap={{ base: 6, md: 8 }}>
           
           <Box bg="white" p={{ base: 6, md: 8 }} borderRadius="2xl" borderWidth="1px" borderColor="gray.100" align="center" shadow="sm" _hover={{ shadow: 'md' }} style={{ transition: 'all 0.3s' }}>
             <Box p={4} bg="rgba(198, 93, 58, 0.08)" borderRadius="2xl" w="fit-content" mb={5}>
@@ -658,7 +655,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
       {/* 3. POPULAR DISHES SECTION */}
       <Box py={16} bg="white" borderTopWidth="1px" borderBottomWidth="1px" borderColor="gray.100">
-        <Container maxW="90%">
+        <Container maxW={{ base: "100%", md: "90%" }} px={{ base: 3, md: 4 }}>
           <Flex justify="space-between" align="center" mb={10}>
             <VStack align="flex-start" spaceY={1}>
               <Text fontSize="xs" fontWeight="bold" letterSpacing="widest" color="#C65D3A" textTransform="uppercase">
@@ -749,46 +746,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                         {meal.description || 'Delectable recipe curated by catering chefs matching premium standard regulations.'}
                       </Text>
 
-                      {/* Dynamic Pooling Tracker Progress Bar */}
-                      <VStack spaceY={1.5} align="stretch" bg="#FFFBF7" p={3.5} borderRadius="2xl" borderWidth="1px" borderColor="#FFEFE0">
-                        <Flex justify="space-between" fontSize="10px" fontWeight="black">
-                          <Text color="gray.600">Pooling Status</Text>
-                          <Text color={meal.is_threshold_met ? "#6B8E23" : "amber.800"}>
-                            {meal.total_ordered_quantity} / {meal.min_threshold} orders
-                          </Text>
-                        </Flex>
-                        
-                        <Box w="full" h="6px" bg="gray.100" borderRadius="full" overflow="hidden">
-                          <Box w={`${percentProgress}%`} h="full" bg={meal.is_threshold_met ? "#6B8E23" : "#C65D3A"} borderRadius="full" />
-                        </Box>
-
-                        {meal.is_threshold_met ? (
-                          <Text fontSize="9px" color="#6B8E23" fontWeight="bold" textAlign="left">
-                            ✓ Target reached! Meal is green-lit to cook
-                          </Text>
-                        ) : (
-                          <Text fontSize="9px" color="gray.500" textAlign="left">
-                            ⏳ Needs {meal.remaining_orders_needed ?? Math.max(1, meal.min_threshold! - meal.total_ordered_quantity!)} more orders to confirm
-                          </Text>
-                        )}
-                      </VStack>
-
                       {/* Footer Price & Add Button */}
-                      <Flex justify="space-between" align="center" pt={3} borderTopWidth="1px" borderColor="gray.100">
-                        <Text fontSize="lg" fontWeight="950" color="#C65D3A">
-                          ₦{meal.unit_price?.toLocaleString() || '1,800'}
-                        </Text>
-
+                      <Flex justify="center" pt={3} borderTopWidth="1px" borderColor="gray.100">
                         <Button 
                           onClick={onViewMenu}
-                          variant="outline"
-                          borderColor="#C65D3A"
-                          color="#C65D3A"
-                          _hover={{ bg: '#C65D3A', color: 'white' }}
+                          bg="#C65D3A"
+                          color="white"
+                          _hover={{ bg: '#A94B2B' }}
                           size="sm"
                           borderRadius="full"
                           h="38px"
                           px={5}
+                          w="full"
                           fontWeight="bold"
                         >
                           Add To Cart
@@ -804,16 +773,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       </Box>
 
       {/* 4. "WE ARE MORE THAN MULTIPLE SERVICE" SECTION */}
-      <Box py={20} bg="#FFFBF7">
-        <Container maxW="90%">
-          <Grid templateColumns={{ base: '1fr', lg: '0.9fr 1.1fr' }} gap={16} alignItems="center">
+      <Box py={{ base: 12, md: 20 }} bg="#FFFBF7">
+        <Container maxW={{ base: "100%", md: "90%" }} px={{ base: 3, md: 4 }}>
+          <Grid templateColumns={{ base: '1fr', lg: '0.9fr 1.1fr' }} gap={{ base: 10, lg: 16 }} alignItems="center">
             
             {/* Left Graphic: Gourmet meal layout card frame */}
             <Box display="flex" justifyContent="center" alignItems="center" position="relative">
               {/* background visual decor */}
               <Box 
                 position="absolute"
-                w="105%"
+                 w={{ base: '280px', sm: '340px', md: '460px' }} 
                 h="105%"
                 borderRadius="3xl"
                 borderWidth="1.5px"
@@ -824,21 +793,21 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               {/* Gourmet Image Core Frame */}
               <Box 
                 w={{ base: '260px', sm: '320px', md: '440px' }} 
-                h={{ base: '260px', sm: '320px', md: '440px' }} 
                 borderRadius="3xl" 
                 overflow="hidden" 
                 borderWidth="8px"
                 borderColor="white"
                 boxShadow="2xl"
                 zIndex={1}
+                bg="white"
               >
                 <Box 
                   as="img"
                   src="https://lgkljlcnqcwqoauymlyi.supabase.co/storage/v1/object/public/public-images/first_img.png"
                   alt="JDH Kitchen services and meals"
                   w="full"
-                  h="full"
-                  objectFit="cover"
+                  h="auto"
+                  display="block"
                   referrerPolicy="no-referrer"
                 />
               </Box>
@@ -896,8 +865,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       </Box>
 
       {/* 5. "OUR REGULAR MENU PACK" SECTION (INTEGRATING YOUR REAL MEALS) */}
-      <Box py={20} bg="white" borderTopWidth="1px" borderBottomWidth="1px" borderColor="gray.100">
-        <Container maxW="90%">
+      <Box py={{ base: 12, md: 20 }} bg="white" borderTopWidth="1px" borderBottomWidth="1px" borderColor="gray.100">
+        <Container maxW={{ base: "100%", md: "90%" }} px={{ base: 3, md: 4 }}>
           <VStack spaceY={3} align="center" textAlign="center" mb={12}>
             <Text fontSize="xs" fontWeight="bold" letterSpacing="widest" color="#C65D3A" textTransform="uppercase">
               Dynamic Campus Catalog
@@ -976,25 +945,21 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                       {meal.description || 'Pre-order this delicious batch meal cooked fresh under premium local standards.'}
                     </Text>
 
-                    <Flex justify="space-between" align="center" pt={3} borderTopWidth="1px" borderColor="gray.100">
-                      <Text fontSize="md" fontWeight="950" color="#C65D3A">
-                        ₦{meal.unit_price?.toLocaleString() || '2,000'}
-                      </Text>
-
+                    <Flex justify="center" pt={3} borderTopWidth="1px" borderColor="gray.100">
                       <Button 
                         onClick={onViewMenu}
-                        variant="outline"
-                        borderColor="#C65D3A"
-                        color="#C65D3A"
-                        _hover={{ bg: '#C65D3A', color: 'white' }}
-                        size="xs"
+                        bg="#C65D3A"
+                        color="white"
+                        _hover={{ bg: '#A94B2B' }}
+                        size="sm"
                         borderRadius="full"
-                        h="34px"
+                        h="38px"
                         px={4}
+                        w="full"
                         fontWeight="bold"
-                        fontSize="10px"
+                        fontSize="11px"
                       >
-                        Add To Cart
+                        View Available Meals
                       </Button>
                     </Flex>
                   </VStack>
@@ -1029,12 +994,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       </Box>
 
       {/* 6. DINNER PLAN / RESERVE YOUR TABLE BANNER */}
-      <Box py={20} bg="#FFFBF7">
-        <Container maxW="90%">
+      <Box py={{ base: 12, md: 20 }} bg="#FFFBF7">
+        <Container maxW={{ base: "100%", md: "90%" }} px={{ base: 3, md: 4 }}>
           <Box 
             bg="white" 
             borderRadius="3xl" 
-            p={{ base: 8, md: 16 }} 
+            p={{ base: 4, sm: 8, md: 16 }} 
             borderWidth="1px" 
             borderColor="gray.150" 
             shadow="xl"
@@ -1082,7 +1047,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               <Flex justify="center">
                 <Box 
                   w={{ base: '240px', sm: '280px', md: '360px' }} 
-                  h={{ base: '240px', sm: '280px', md: '360px' }} 
                   borderRadius="3xl" 
                   bg="white" 
                   p={3.5}
@@ -1095,8 +1059,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     src="https://lgkljlcnqcwqoauymlyi.supabase.co/storage/v1/object/public/public-images/second_img.png"
                     alt="JDH Kitchen Special Event Catering"
                     w="full"
-                    h="full"
-                    objectFit="cover"
+                    h="auto"
+                    display="block"
                     borderRadius="2xl"
                     referrerPolicy="no-referrer"
                   />
@@ -1108,8 +1072,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       </Box>
 
       {/* 7. CUSTOMER TESTIMONIALS / WHAT OUR CUSTOMER SAYS */}
-      <Box py={20} bg="white" borderTopWidth="1px" borderBottomWidth="1px" borderColor="gray.100">
-        <Container maxW="90%">
+      <Box py={{ base: 12, md: 20 }} bg="white" borderTopWidth="1px" borderBottomWidth="1px" borderColor="gray.100">
+        <Container maxW={{ base: "100%", md: "90%" }} px={{ base: 3, md: 4 }}>
           <Flex justify="space-between" align="center" mb={12} flexWrap="wrap" gap={4}>
             <VStack align="flex-start" spaceY={1}>
               <Text fontSize="xs" fontWeight="bold" letterSpacing="widest" color="#C65D3A" textTransform="uppercase">
@@ -1455,8 +1419,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
       {/* 9. GUEST PRE-ORDER TRACKING ENGINE */}
       <Box py={16} bg="white" borderTopWidth="1px" borderBottomWidth="1px" borderColor="gray.100">
-        <Container maxW="90%">
-          <Grid templateColumns={{ base: '1fr', lg: '1.2fr 0.8fr' }} gap={16} alignItems="center">
+        <Container maxW={{ base: "100%", md: "90%" }} px={{ base: 3, md: 4 }}>
+          <Grid templateColumns={{ base: '1fr', lg: '1.2fr 0.8fr' }} gap={{ base: 10, lg: 16 }} alignItems="center">
             
             <VStack align="flex-start" spaceY={5}>
               <Badge bg="rgba(198, 93, 58, 0.08)" color="#C65D3A" px={3.5} py={1.5} borderRadius="full" fontSize="11px" fontWeight="black">
@@ -1549,19 +1513,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       </Box>
 
       {/* 10. MOBILE APP BANNER SECTION CONVERTED TO PREMIUM PWA INSTALLER */}
-      <Box py={20} bg="#FFFBF7">
-        <Container maxW="90%">
+      <Box py={{ base: 12, md: 20 }} bg="#FFFBF7">
+        <Container maxW={{ base: "100%", md: "90%" }} px={{ base: 3, md: 4 }}>
           <Box 
             bg="white" 
             borderRadius="3xl" 
-            p={{ base: 8, md: 16 }} 
+            p={{ base: 4, sm: 8, md: 16 }} 
             borderWidth="1px" 
             borderColor="gray.150" 
             shadow="xl"
             position="relative"
             overflow="hidden"
           >
-            <Grid templateColumns={{ base: '1fr', lg: '1.2fr 0.8fr' }} gap={12} alignItems="center">
+            <Grid templateColumns={{ base: '1fr', lg: '1.2fr 0.8fr' }} gap={{ base: 10, lg: 12 }} alignItems="center">
               
               <VStack align="flex-start" spaceY={6}>
                 <Badge bg="rgba(198, 93, 58, 0.08)" color="#C65D3A" px={3} py={1} borderRadius="full" fontSize="10px" fontWeight="black" textTransform="uppercase" letterSpacing="wider">
@@ -1718,8 +1682,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
       {/* 11. FULL-FLEDGED PREMIUM FOOTER WITH COMPREHENSIVE BRAND MATCH */}
       <Box borderTopWidth="1px" borderColor="gray.150" bg="#FFFBF7" pt={16} pb={8}>
-        <Container maxW="90%" px={4}>
-          <Grid templateColumns={{ base: '1fr', md: '2fr 1fr 1fr' }} gap={10} mb={12}>
+        <Container maxW={{ base: "100%", md: "90%" }} px={{ base: 3, md: 4 }}>
+          <Grid templateColumns={{ base: '1fr', md: '2fr 1fr 1fr' }} gap={{ base: 8, md: 10 }} mb={12}>
             {/* Column 1: Brand Info */}
             <VStack align="flex-start" spaceY={4}>
               <HStack spaceX={3.5} align="center">

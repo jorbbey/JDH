@@ -18,26 +18,7 @@ import {
 import { X, ShoppingBag, Plus, Minus } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { MenuMealProgress } from '../services/menus';
-
-export interface ExtraOption {
-  id: string;
-  name: string;
-  price: number;
-}
-
-export const EXTRA_OPTIONS: ExtraOption[] = [
-  { id: 'opt-plantain', name: 'Plantain (Per Portion)', price: 300 },
-  { id: 'opt-sausage', name: 'Sausage', price: 450 },
-  { id: 'opt-gizzard', name: 'Gizzard', price: 300 },
-  { id: 'opt-beef', name: 'Beef', price: 600 },
-  { id: 'opt-egg', name: 'Egg (boiled)', price: 300 },
-  { id: 'opt-hake-big', name: 'Hake Fish big', price: 1700 },
-  { id: 'opt-chicken-gourmet', name: 'Peppered Chicken (Gourmet)', price: 3500 },
-  { id: 'opt-turkey-medium', name: 'Peppered Medium Turkey', price: 3300 },
-  { id: 'opt-turkey-big', name: 'Peppered Big Turkey', price: 5300 },
-  { id: 'opt-chicken-regular', name: 'Peppered Chicken', price: 1500 },
-  { id: 'opt-hake-mini', name: 'Hake fish mini', price: 1000 },
-];
+import { proteinService, ExtraOption } from '../services/proteins';
 
 interface CustomizeModalProps {
   meal: MenuMealProgress | null;
@@ -59,6 +40,7 @@ export const CustomizeModal: React.FC<CustomizeModalProps> = ({
   onConfirm,
   initialQuantity = 1,
 }) => {
+  const [extraOptions, setExtraOptions] = useState<ExtraOption[]>([]);
   const [selectedExtras, setSelectedExtras] = useState<Record<string, boolean>>({});
   const [quantity, setQuantity] = useState(1);
 
@@ -66,6 +48,12 @@ export const CustomizeModal: React.FC<CustomizeModalProps> = ({
     if (isOpen) {
       setQuantity(initialQuantity);
       setSelectedExtras({});
+      // Load proteins dynamically
+      proteinService.getProteinOptions().then((opts) => {
+        setExtraOptions(opts);
+      }).catch((err) => {
+        console.error('Error loading proteins:', err);
+      });
     }
   }, [isOpen, initialQuantity]);
 
@@ -82,7 +70,7 @@ export const CustomizeModal: React.FC<CustomizeModalProps> = ({
     return Object.values(selectedExtras).filter(Boolean).length;
   };
 
-  const activeExtras = EXTRA_OPTIONS.filter((opt) => selectedExtras[opt.id]);
+  const activeExtras = extraOptions.filter((opt) => selectedExtras[opt.id]);
   const extrasTotal = activeExtras.reduce((sum, opt) => sum + opt.price, 0);
   const basePrice = meal.unit_price || 0;
   const singlePortionPrice = basePrice + extrasTotal;
@@ -191,8 +179,9 @@ export const CustomizeModal: React.FC<CustomizeModalProps> = ({
 
             {/* Extras options checkboxes */}
             <VStack align="stretch" spaceY={2.5}>
-              {EXTRA_OPTIONS.map((opt) => {
+              {extraOptions.map((opt) => {
                 const isSelected = !!selectedExtras[opt.id];
+
                 return (
                   <Flex
                     key={opt.id}

@@ -520,3 +520,38 @@ USING (bucket_id = 'reviewer-avatars')
 WITH CHECK (bucket_id = 'reviewer-avatars');
 
 
+-- =====================================================================
+-- PROTEIN & EXTRAS OPTIONS TABLING
+-- =====================================================================
+
+CREATE TABLE IF NOT EXISTS public.protein_options (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  price NUMERIC(10, 2) NOT NULL CHECK (price >= 0),
+  created_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Enable RLS on public.protein_options
+ALTER TABLE public.protein_options ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing protein policies if they exist to prevent conflicts on application
+DROP POLICY IF EXISTS "Allow public read access to protein_options" ON public.protein_options;
+DROP POLICY IF EXISTS "Allow public insert access to protein_options" ON public.protein_options;
+DROP POLICY IF EXISTS "Allow public update access to protein_options" ON public.protein_options;
+DROP POLICY IF EXISTS "Allow public delete access to protein_options" ON public.protein_options;
+
+-- Create policies for public protein access
+CREATE POLICY "Allow public read access to protein_options" ON public.protein_options
+  FOR SELECT USING (true);
+
+CREATE POLICY "Allow public insert access to protein_options" ON public.protein_options
+  FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Allow public update access to protein_options" ON public.protein_options
+  FOR UPDATE USING (true) WITH CHECK (true);
+
+CREATE POLICY "Allow public delete access to protein_options" ON public.protein_options
+  FOR DELETE USING (true);
+
+
+

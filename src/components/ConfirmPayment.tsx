@@ -51,9 +51,9 @@ export const ConfirmPayment: React.FC<ConfirmPaymentProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const BANK_DETAILS = {
-    bankName: 'Sterling Bank PLC',
-    accountNumber: '1016839215',
-    accountName: 'JDH Kitchen Co-Op Food Services',
+    bankName: 'Opay',
+    accountNumber: '6100712673',
+    accountName: 'JDH World Best Foods',
   };
 
   const copyAccountNumber = () => {

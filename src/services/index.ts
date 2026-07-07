@@ -20,3 +20,6 @@ export type { PaymentProofRow, PaymentProofInput } from './payment';
 
 export { cateringService } from './catering';
 export type { CateringRequestRow, CateringRequestInsert, CateringDetailedItem } from './catering';
+
+export { proteinService } from './proteins';
+export type { ExtraOption } from './proteins';

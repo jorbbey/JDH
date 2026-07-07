@@ -93,10 +93,10 @@ export const ContactUs: React.FC<ContactUsProps> = ({ onNavigateHome }) => {
                   <VStack align="flex-start" spaceY={0.5}>
                     <Text fontSize="xs" fontWeight="bold" color="black">Delivery Locations</Text>
                     <Text fontSize="xs" color="gray.500" fontWeight="medium">
-                      Front of school (for off-klites) and Coe Villa (for hostelites).
+                      Front of school (for off-klites), Coke Villa (for hostelites), and SICT gate (for those in school).
                     </Text>
                     <Text fontSize="10px" color="#6B8E23" fontWeight="bold">
-                      📍 Note: Delivery is conducted exclusively at these two pickup points.
+                      📍 Note: Delivery is conducted exclusively at these three pickup points.
                     </Text>
                   </VStack>
                 </HStack>
