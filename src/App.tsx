@@ -256,7 +256,7 @@ export default function App() {
         
         {/* Modern Sticky Brand Navigation Bar */}
         <Box bg="white" borderBottomWidth="1px" borderColor="gray.150" py={3} px={4} position="sticky" top={0} zIndex={100} shadow="sm">
-          <Container maxW="100%" px={{ base: 2, md: 8 }}>
+          <Container maxW="100%" px={{ base: 4, md: 8 }}>
             <Flex justify="space-between" align="center" gap={3}>
               
               {/* Brand Logo and Title */}

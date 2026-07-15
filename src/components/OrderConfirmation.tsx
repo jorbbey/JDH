@@ -67,7 +67,7 @@ export const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
 
   // Direct Delivery Guidelines matching co-op schedules
   const deliveryLocation = order?.hostel_name || 'Front of school / Coke Villa / SICT gate';
-  const pickupTime = '1:00 PM - 5:00 PM';
+  const pickupTime = '10:00 AM';
   const pickupDate = 'Next Thursday / Sunday (Subject to order pooling confirmation)';
 
   return (

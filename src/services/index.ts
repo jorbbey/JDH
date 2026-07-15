@@ -23,3 +23,6 @@ export type { CateringRequestRow, CateringRequestInsert, CateringDetailedItem } 
 
 export { proteinService } from './proteins';
 export type { ExtraOption } from './proteins';
+
+export { web3FormsService } from './notification';
+

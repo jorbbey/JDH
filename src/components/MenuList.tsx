@@ -129,6 +129,20 @@ export const MenuList: React.FC<MenuListProps> = ({
     return matchesCategory && matchesSearch;
   });
 
+  // Find all active thresholds dynamically
+  const activeThresholds = meals.map(m => m.min_threshold).filter((t): t is number => typeof t === 'number' && t > 0);
+  const minThresholdValue = activeThresholds.length > 0 ? Math.min(...activeThresholds) : 40;
+  const maxThresholdValue = activeThresholds.length > 0 ? Math.max(...activeThresholds) : 40;
+
+  let thresholdSpan = '';
+  if (activeThresholds.length === 0) {
+    thresholdSpan = 'the required threshold (e.g. 40 orders)';
+  } else if (minThresholdValue === maxThresholdValue) {
+    thresholdSpan = `${minThresholdValue} orders`;
+  } else {
+    thresholdSpan = `${minThresholdValue} to ${maxThresholdValue} orders`;
+  }
+
   return (
     <Box minH="90vh" bg="#FAFAF7" py={4}>
       <Container maxW="90%">
@@ -187,7 +201,7 @@ export const MenuList: React.FC<MenuListProps> = ({
                   <Text fontSize="xs" fontWeight="bold" color="black">Threshold Multi-Buyer Model</Text>
                 </HStack>
                 <Text fontSize="11px" color="gray.500" lineHeight="relaxed">
-                  We prepare premium recipes in bulk only when student demand crosses <strong>40 orders</strong> per meal. Direct personal refund: your transfer is fully returned if the batch threshold fails.
+                  We prepare premium recipes in bulk only when student demand crosses <strong>{thresholdSpan}</strong> per meal. Direct personal refund: your transfer is fully returned if the batch threshold fails.
                 </Text>
               </VStack>
             </Box>

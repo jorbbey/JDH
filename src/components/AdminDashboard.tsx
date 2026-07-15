@@ -16,6 +16,7 @@ import {
   Container,
   Badge,
   Grid,
+  Portal,
 } from '@chakra-ui/react';
 import {
   Lock,
@@ -37,6 +38,7 @@ import {
   FileSpreadsheet,
   X,
   RefreshCw,
+  Maximize2,
 } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { authService } from '../services/auth';
@@ -168,6 +170,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [rejectionReason, setRejectionReason] = useState('');
   const [orderActionMessage, setOrderActionMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [orderSearchQuery, setOrderSearchQuery] = useState('');
+  const [expandedReceiptUrl, setExpandedReceiptUrl] = useState<string | null>(null);
   const [orderStatusFilter, setOrderStatusFilter] = useState<string>('all');
 
   // Feature 10: Catering request states
@@ -386,6 +389,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     setIsLoadingOrders(true);
     setOrderActionMessage(null);
     try {
+      // Automatic clearing of receipt logs after 11:59pm of the end of the delivery day
+      try {
+        await paymentService.clearPastReceiptLogs();
+      } catch (cleanupErr) {
+        console.error('Error during automatic receipt cleanup:', cleanupErr);
+      }
+
       const orders = await orderService.getAllOrders();
       setAllOrders(orders);
     } catch (err: any) {
@@ -2553,7 +2563,24 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                 </Box>
 
                                 {/* Receipt Photo Box */}
-                                <Box bg="gray.100" h="150px" borderRadius="xl" overflow="hidden" position="relative" borderStyle="solid" borderWidth="1px" borderColor="gray.200">
+                                <Box 
+                                  bg="gray.100" 
+                                  h="160px" 
+                                  borderRadius="xl" 
+                                  overflow="hidden" 
+                                  position="relative" 
+                                  borderStyle="solid" 
+                                  borderWidth="1.5px" 
+                                  borderColor="gray.200"
+                                  cursor="pointer"
+                                  transition="all 0.2s"
+                                  _hover={{ shadow: 'md', transform: 'scale(1.02)' }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setExpandedReceiptUrl(selectedOrderProof.proof_image_url);
+                                  }}
+                                  title="Click to view full screen receipt"
+                                >
                                   <Box
                                     as="img"
                                     src={selectedOrderProof.proof_image_url}
@@ -2561,8 +2588,50 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                     h="full"
                                     objectFit="contain"
                                     alt="Payment reference proof receipt"
+                                    referrerPolicy="no-referrer"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setExpandedReceiptUrl(selectedOrderProof.proof_image_url);
+                                    }}
                                   />
+                                  <Box 
+                                    position="absolute" 
+                                    bottom={0} 
+                                    left={0} 
+                                    right={0} 
+                                    bg="rgba(0,0,0,0.6)" 
+                                    py={1.5} 
+                                    textAlign="center"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setExpandedReceiptUrl(selectedOrderProof.proof_image_url);
+                                    }}
+                                  >
+                                    <Text fontSize="10px" color="white" fontWeight="bold">
+                                      🔍 Click Image to Expand
+                                    </Text>
+                                  </Box>
                                 </Box>
+
+                                {/* Direct Explicit Zoom Button for ultimate reliability */}
+                                <Button
+                                  size="sm"
+                                  variant="solid"
+                                  colorScheme="orange"
+                                  bg="#C65D3A"
+                                  color="white"
+                                  _hover={{ bg: '#A54D2B' }}
+                                  leftIcon={<Maximize2 size={14} />}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setExpandedReceiptUrl(selectedOrderProof.proof_image_url);
+                                  }}
+                                  width="full"
+                                  borderRadius="xl"
+                                  fontWeight="bold"
+                                >
+                                  Expand & View Full Screen Receipt
+                                </Button>
 
                                 {selectedOrderProof.status === 'pending' ? (
                                   <VStack spaceY={3} align="stretch">
@@ -3334,6 +3403,116 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 </Button>
               </Flex>
             </Box>
+          )}
+
+          {/* High-quality Lightbox Modal for Receipt Image Expansion */}
+          {expandedReceiptUrl && (
+            <Portal>
+              <Box
+                position="fixed"
+                top={0}
+                left={0}
+                right={0}
+                bottom={0}
+                bg="rgba(0,0,0,0.85)"
+                backdropFilter="blur(8px)"
+                zIndex={999999}
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                p={4}
+                onClick={() => setExpandedReceiptUrl(null)}
+              >
+                <Box
+                  position="relative"
+                  maxW={{ base: "95%", md: "80%", lg: "60%" }}
+                  maxH="85vh"
+                  bg="white"
+                  borderRadius="2xl"
+                  overflow="hidden"
+                  shadow="2xl"
+                  onClick={(e) => e.stopPropagation()}
+                  display="flex"
+                  flexDirection="column"
+                >
+                  {/* Header with Title and Close button */}
+                  <Flex justify="space-between" align="center" bg="gray.50" px={5} py={4} borderBottomWidth="1px" borderColor="gray.150">
+                    <HStack spaceX={2} align="center">
+                      <Receipt size={18} color="#C65D3A" />
+                      <Heading as="h4" size="xs" fontWeight="black" color="gray.800">
+                        Payment Receipt Verification Proof
+                      </Heading>
+                    </HStack>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setExpandedReceiptUrl(null)}
+                      borderRadius="full"
+                      p={1.5}
+                      _hover={{ bg: "gray.200" }}
+                    >
+                      <X size={18} />
+                    </Button>
+                  </Flex>
+
+                  {/* Main Image Body */}
+                  <Box p={4} bg="gray.50" flex={1} overflow="auto" display="flex" justifyContent="center" alignItems="center">
+                    <Box
+                      as="img"
+                      src={expandedReceiptUrl}
+                      alt="Expanded student payment proof receipt"
+                      maxW="100%"
+                      maxH="60vh"
+                      objectFit="contain"
+                      borderRadius="lg"
+                      shadow="md"
+                      referrerPolicy="no-referrer"
+                    />
+                  </Box>
+
+                  {/* Footer Controls */}
+                  <Flex justify="space-between" align="center" bg="white" px={5} py={3.5} borderTopWidth="1px" borderColor="gray.150">
+                    <Text fontSize="11px" color="gray.500">
+                      Scroll/pinch to inspect details.
+                    </Text>
+                    <HStack spaceX={2}>
+                      <Button
+                        as="a"
+                        href={expandedReceiptUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        size="xs"
+                        colorScheme="orange"
+                        bg="#C65D3A"
+                        color="white"
+                        px={4}
+                        py={2}
+                        borderRadius="lg"
+                        fontWeight="bold"
+                        _hover={{ bg: "#B54D2A" }}
+                        display="inline-flex"
+                        alignItems="center"
+                      >
+                        Open Original Image ↗
+                      </Button>
+                      <Button
+                        size="xs"
+                        variant="outline"
+                        borderColor="gray.300"
+                        color="gray.700"
+                        px={4}
+                        py={2}
+                        borderRadius="lg"
+                        onClick={() => setExpandedReceiptUrl(null)}
+                      >
+                        Close Viewer
+                      </Button>
+                    </HStack>
+                  </Flex>
+                </Box>
+              </Box>
+            </Portal>
           )}
         </Box>
       )}

@@ -5,6 +5,8 @@
 
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import type { Database, ProofStatus } from '../types/database.types';
+import { menuService } from './menus';
+import { orderService } from './orders';
 
 export type PaymentProofRow = Database['public']['Tables']['payment_proofs']['Row'];
 
@@ -86,15 +88,14 @@ export const paymentService = {
     const { data, error } = await (supabase as any)
       .from('payment_proofs')
       .select('*')
-      .eq('order_id', orderId)
-      .maybeSingle();
+      .eq('order_id', orderId);
 
     if (error) {
       console.error(`Error loading payment proof for order ${orderId}:`, error);
       return null;
     }
 
-    return data;
+    return data && data.length > 0 ? data[0] : null;
   },
 
   /**
@@ -192,5 +193,125 @@ export const paymentService = {
     // Simulate real server-side transaction verification proxy ping
     await new Promise((r) => setTimeout(r, 1000));
     return { success: true, data: { channel: 'card', brand: 'visa', reference } };
+  },
+
+  /**
+   * Automatically clears receipt logs (payment proofs) whose associated orders'
+   * weekly menu delivery date has passed 11:59pm.
+   */
+  async clearPastReceiptLogs(): Promise<number> {
+    const now = new Date();
+    let pastMenuIds: string[] = [];
+
+    if (!isSupabaseConfigured) {
+      try {
+        const menus = await menuService.getAllMenus();
+        for (const m of menus) {
+          const s = await menuService.getDeliveryScheduleForMenu(m.id);
+          if (s && s.delivery_date) {
+            const parts = s.delivery_date.split('-');
+            if (parts.length === 3) {
+              const year = parseInt(parts[0], 10);
+              const month = parseInt(parts[1], 10);
+              const day = parseInt(parts[2], 10);
+              const endOfDeliveryDay = new Date(year, month - 1, day, 23, 59, 59, 999);
+              if (now > endOfDeliveryDay) {
+                pastMenuIds.push(m.id);
+              }
+            }
+          }
+        }
+      } catch (e) {
+        pastMenuIds = ['menu-week-24']; // fallback for mock
+      }
+
+      if (pastMenuIds.length === 0) return 0;
+
+      // In mock mode, delete from MOCK_PROOFS if the order belongs to any of pastMenuIds
+      try {
+        const orders = await orderService.getAllOrders();
+        let deletedCount = 0;
+        for (let i = MOCK_PROOFS.length - 1; i >= 0; i--) {
+          const proof = MOCK_PROOFS[i];
+          const ord = orders.find(o => o.id === proof.order_id);
+          if (ord) {
+            MOCK_PROOFS.splice(i, 1);
+            deletedCount++;
+          }
+        }
+        return deletedCount;
+      } catch (err) {
+        console.error('Error in mock clearPastReceiptLogs:', err);
+        return 0;
+      }
+    }
+
+    try {
+      // 1. Fetch all delivery schedules
+      const { data: schedules, error: schedError } = await (supabase as any)
+        .from('delivery_schedules')
+        .select('menu_id, delivery_date');
+
+      if (schedError) {
+        console.error('Error fetching schedules for cleanup:', schedError);
+        return 0;
+      }
+
+      if (!schedules || schedules.length === 0) return 0;
+
+      for (const s of schedules) {
+        if (!s.delivery_date || !s.menu_id) continue;
+        const parts = s.delivery_date.split('-');
+        if (parts.length === 3) {
+          const year = parseInt(parts[0], 10);
+          const month = parseInt(parts[1], 10);
+          const day = parseInt(parts[2], 10);
+          const endOfDeliveryDay = new Date(year, month - 1, day, 23, 59, 59, 999);
+          if (now > endOfDeliveryDay) {
+            pastMenuIds.push(s.menu_id);
+          }
+        }
+      }
+
+      if (pastMenuIds.length === 0) return 0;
+
+      // 2. Query all order_items belonging to past menu_ids
+      const { data: items, error: itemsError } = await (supabase as any)
+        .from('order_items')
+        .select(`
+          order_id,
+          menu_meals!inner (
+            menu_id
+          )
+        `)
+        .in('menu_meals.menu_id', pastMenuIds);
+
+      if (itemsError) {
+        console.error('Error fetching items for cleanup:', itemsError);
+        return 0;
+      }
+
+      if (!items || items.length === 0) return 0;
+
+      const orderIdsToClear = Array.from(new Set(items.map((it: any) => it.order_id)));
+      if (orderIdsToClear.length === 0) return 0;
+
+      // 3. Delete from payment_proofs where order_id is in orderIdsToClear
+      const { error: deleteError, data: deletedRows } = await (supabase as any)
+        .from('payment_proofs')
+        .delete()
+        .in('order_id', orderIdsToClear)
+        .select();
+
+      if (deleteError) {
+        console.error('Error deleting past payment proofs:', deleteError);
+        return 0;
+      }
+
+      return deletedRows ? deletedRows.length : 0;
+    } catch (err) {
+      console.error('Exception in clearPastReceiptLogs:', err);
+      return 0;
+    }
   },
 };

@@ -27,6 +27,8 @@ import {
   Building,
 } from 'lucide-react';
 import { paymentService } from '../services/payment';
+import { web3FormsService } from '../services/notification';
+
 
 interface ConfirmPaymentProps {
   orderId: string;
@@ -113,7 +115,19 @@ export const ConfirmPayment: React.FC<ConfirmPaymentProps> = ({
         proof_image_url: imageUrl,
       });
 
-      // 3. Fire success transition callback
+      // 3. Fire background order placed email notification (non-blocking)
+      try {
+        web3FormsService.sendOrderPlacedNotification(
+          orderId,
+          totalAmount,
+          txRef.trim() || undefined,
+          imageUrl
+        ).catch(e => console.error('Background notification error:', e));
+      } catch (notifyErr) {
+        console.error('Error initiating order placed notification:', notifyErr);
+      }
+
+      // 4. Fire success transition callback
       onSuccess();
     } catch (err: any) {
       setErrorMsg(err.message || 'Error uploading receipt. Please try another image.');

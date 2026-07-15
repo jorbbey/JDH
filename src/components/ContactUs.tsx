@@ -27,6 +27,7 @@ import {
   Sparkles,
   MessageSquare,
 } from 'lucide-react';
+import { web3FormsService } from '../services/notification';
 
 interface ContactUsProps {
   onNavigateHome: () => void;
@@ -38,18 +39,30 @@ export const ContactUs: React.FC<ContactUsProps> = ({ onNavigateHome }) => {
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => {
+    setErrorMessage(null);
+    try {
+      const isSent = await web3FormsService.sendContactMessage(name, email, message);
+      if (isSent) {
+        setSuccess(true);
+        setName('');
+        setEmail('');
+        setMessage('');
+      } else {
+        setErrorMessage('Unable to dispatch message via Web3Forms. Please verify your internet connection or check the access key configuration.');
+      }
+    } catch (err) {
+      console.error(err);
+      setErrorMessage('An unexpected error occurred while sending your message.');
+    } finally {
       setIsSubmitting(false);
-      setSuccess(true);
-      setName('');
-      setEmail('');
-      setMessage('');
-    }, 1200);
+    }
   };
+
 
   return (
     <Box minH="90vh" bg="#FAFAF7" py={6}>
@@ -108,7 +121,7 @@ export const ContactUs: React.FC<ContactUsProps> = ({ onNavigateHome }) => {
                   <VStack align="flex-start" spaceY={0.5}>
                     <Text fontSize="xs" fontWeight="bold" color="black">Fulfillment & Collection Hours</Text>
                     <Text fontSize="xs" color="gray.500">
-                      Thursdays & Sundays: 12:00 PM - 6:00 PM
+                      Thursdays & Sundays: 10:00 AM onwards
                     </Text>
                     <Text fontSize="10px" color="gray.400">
                       (Subject to menu-specific pooling threshold achievements)
@@ -161,6 +174,11 @@ export const ContactUs: React.FC<ContactUsProps> = ({ onNavigateHome }) => {
             ) : (
               <form onSubmit={handleSubmit}>
                 <VStack align="stretch" spaceY={4}>
+                  {errorMessage && (
+                    <Box bg="red.50" color="red.700" p={3.5} borderRadius="xl" fontSize="xs" fontWeight="bold">
+                      ⚠️ {errorMessage}
+                    </Box>
+                  )}
                   <VStack align="flex-start" spaceY={1}>
                     <Text fontSize="xs" fontWeight="bold" color="gray.600">Your Full Name *</Text>
                     <Input
