@@ -66,7 +66,7 @@ export const ContactUs: React.FC<ContactUsProps> = ({ onNavigateHome }) => {
 
   return (
     <Box minH="90vh" bg="#FAFAF7" py={6}>
-      <Container maxW="90%">
+      <Container maxW={{ base: "100%", md: "95%", lg: "90%" }} px={{ base: 2.5, sm: 4, md: 6 }}>
         {/* Navigation Breadcrumb */}
         <Button
           variant="ghost"
@@ -148,7 +148,7 @@ export const ContactUs: React.FC<ContactUsProps> = ({ onNavigateHome }) => {
                   <VStack align="flex-start" spaceY={0.5}>
                     <Text fontSize="xs" fontWeight="bold" color="black">Email Inquiries</Text>
                     <Text fontSize="xs" color="gray.500">
-                      coop@jdh-kitchen.com
+                      jdhkitchen@gmail.com
                     </Text>
                   </VStack>
                 </HStack>

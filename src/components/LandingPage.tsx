@@ -602,8 +602,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       <Container maxW={{ base: "100%", md: "90%" }} py={12} px={{ base: 3, md: 4 }}>
         <Grid templateColumns={{ base: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }} gap={{ base: 6, md: 8 }}>
           
-          <Box bg="white" p={{ base: 6, md: 8 }} borderRadius="2xl" borderWidth="1px" borderColor="gray.100" align="center" shadow="sm" _hover={{ shadow: 'md' }} style={{ transition: 'all 0.3s' }}>
-            <Box p={4} bg="rgba(198, 93, 58, 0.08)" borderRadius="2xl" w="fit-content" mb={5}>
+          <Box bg="white" p={{ base: 6, md: 8 }} borderRadius="2xl" borderWidth="1px" borderColor="gray.100" display="flex" flexDirection="column" alignItems="center" textAlign="center" justifyContent="center" shadow="sm" _hover={{ shadow: 'md' }} style={{ transition: 'all 0.3s' }}>
+            <Box p={4} bg="rgba(198, 93, 58, 0.08)" borderRadius="2xl" w="fit-content" mx="auto" mb={5}>
               <Users size={24} color="#C65D3A" />
             </Box>
             <Heading as="h4" size="sm" fontWeight="900" mb={1} color="black">
@@ -614,8 +614,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </Text>
           </Box>
 
-          <Box bg="white" p={{ base: 6, md: 8 }} borderRadius="2xl" borderWidth="1px" borderColor="gray.100" align="center" shadow="sm" _hover={{ shadow: 'md' }} style={{ transition: 'all 0.3s' }}>
-            <Box p={4} bg="rgba(198, 93, 58, 0.08)" borderRadius="2xl" w="fit-content" mb={5}>
+          <Box bg="white" p={{ base: 6, md: 8 }} borderRadius="2xl" borderWidth="1px" borderColor="gray.100" display="flex" flexDirection="column" alignItems="center" textAlign="center" justifyContent="center" shadow="sm" _hover={{ shadow: 'md' }} style={{ transition: 'all 0.3s' }}>
+            <Box p={4} bg="rgba(198, 93, 58, 0.08)" borderRadius="2xl" w="fit-content" mx="auto" mb={5}>
               <ChefHat size={24} color="#C65D3A" />
             </Box>
             <Heading as="h4" size="sm" fontWeight="900" mb={1} color="black">
@@ -626,8 +626,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </Text>
           </Box>
 
-          <Box bg="white" p={{ base: 6, md: 8 }} borderRadius="2xl" borderWidth="1px" borderColor="gray.100" align="center" shadow="sm" _hover={{ shadow: 'md' }} style={{ transition: 'all 0.3s' }}>
-            <Box p={4} bg="rgba(198, 93, 58, 0.08)" borderRadius="2xl" w="fit-content" mb={5}>
+          <Box bg="white" p={{ base: 6, md: 8 }} borderRadius="2xl" borderWidth="1px" borderColor="gray.100" display="flex" flexDirection="column" alignItems="center" textAlign="center" justifyContent="center" shadow="sm" _hover={{ shadow: 'md' }} style={{ transition: 'all 0.3s' }}>
+            <Box p={4} bg="rgba(198, 93, 58, 0.08)" borderRadius="2xl" w="fit-content" mx="auto" mb={5}>
               <MapPin size={24} color="#C65D3A" />
             </Box>
             <Heading as="h4" size="sm" fontWeight="900" mb={1} color="black">
@@ -638,8 +638,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </Text>
           </Box>
 
-          <Box bg="white" p={{ base: 6, md: 8 }} borderRadius="2xl" borderWidth="1px" borderColor="gray.100" align="center" shadow="sm" _hover={{ shadow: 'md' }} style={{ transition: 'all 0.3s' }}>
-            <Box p={4} bg="rgba(198, 93, 58, 0.08)" borderRadius="2xl" w="fit-content" mb={5}>
+          <Box bg="white" p={{ base: 6, md: 8 }} borderRadius="2xl" borderWidth="1px" borderColor="gray.100" display="flex" flexDirection="column" alignItems="center" textAlign="center" justifyContent="center" shadow="sm" _hover={{ shadow: 'md' }} style={{ transition: 'all 0.3s' }}>
+            <Box p={4} bg="rgba(198, 93, 58, 0.08)" borderRadius="2xl" w="fit-content" mx="auto" mb={5}>
               <Wallet size={24} color="#C65D3A" />
             </Box>
             <Heading as="h4" size="sm" fontWeight="900" mb={1} color="black">
@@ -820,12 +820,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </Box>
 
             {/* Right Information Pack */}
-            <VStack align="flex-start" spaceY={6}>
+            <VStack align={{ base: 'center', lg: 'flex-start' }} spaceY={6} textAlign={{ base: 'center', lg: 'left' }}>
               <Text fontSize="xs" fontWeight="bold" letterSpacing="widest" color="#6B8E23" textTransform="uppercase">
                 About Our Service
               </Text>
               <Heading as="h2" size="2xl" fontWeight="950" color="black" letterSpacing="-0.03em" lineHeight="1.15">
-                More Than Just
+                More Than Just<br />
                 Food Delivery
               </Heading>
               
@@ -1680,123 +1680,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         </Container>
       </Box>
 
-      {/* 11. FULL-FLEDGED PREMIUM FOOTER WITH COMPREHENSIVE BRAND MATCH */}
-      <Box borderTopWidth="1px" borderColor="gray.150" bg="#FFFBF7" pt={16} pb={8}>
-        <Container maxW={{ base: "100%", md: "90%" }} px={{ base: 3, md: 4 }}>
-          <Grid templateColumns={{ base: '1fr', md: '2fr 1fr 1fr' }} gap={{ base: 8, md: 10 }} mb={12}>
-            {/* Column 1: Brand Info */}
-            <VStack align="flex-start" spaceY={4}>
-              <HStack spaceX={3.5} align="center">
-                <Box 
-                  p={2} 
-                  bg="white" 
-                  borderRadius="2xl" 
-                  borderWidth="1.5px" 
-                  borderColor="#EFEBE4" 
-                  shadow="sm" 
-                  display="flex" 
-                  alignItems="center" 
-                  justifyContent="center"
-                  w="54px"
-                  h="54px"
-                >
-                  <Box
-                    as="img"
-                    src={jdhLogo}
-                    alt="JDH Kitchen Logo"
-                    h="36px"
-                    w="auto"
-                    objectFit="contain"
-                  />
-                </Box>
-                <VStack align="flex-start" spaceY={0}>
-                  <Heading as="h3" size="xs" fontWeight="950" letterSpacing="0.05em" color="black" textTransform="uppercase">
-                    JDH KITCHEN
-                  </Heading>
-                  <Text fontSize="10px" fontWeight="black" color="#C65D3A" letterSpacing="widest" textTransform="uppercase">
-                    CAMPUS FOOD CO-OP
-                  </Text>
-                </VStack>
-              </HStack>
-              <Text fontSize="sm" color="gray.600" lineHeight="relaxed">
-                The modern student-first culinary co-operative. We gather aggregate campus pre-orders to prepare premium, chef-quality traditional dishes at unbeatable batch prices.
-              </Text>
-
-              {/* Social links with actual Lucide icons */}
-              <HStack spaceX={3.5} pt={2}>
-                <Box as="a" href="#" aria-label="Facebook" w="40px" h="40px" borderRadius="full" bg="white" borderWidth="1.5px" borderColor="#EFEBE4" display="flex" alignItems="center" justifyContent="center" color="gray.600" _hover={{ bg: '#C65D3A', color: 'white', borderColor: '#C65D3A', transform: 'translateY(-2px)' }} style={{ transition: 'all 0.2s' }}>
-                  <Facebook size={18} strokeWidth={2} />
-                </Box>
-                <Box as="a" href="#" aria-label="Twitter" w="40px" h="40px" borderRadius="full" bg="white" borderWidth="1.5px" borderColor="#EFEBE4" display="flex" alignItems="center" justifyContent="center" color="gray.600" _hover={{ bg: '#C65D3A', color: 'white', borderColor: '#C65D3A', transform: 'translateY(-2px)' }} style={{ transition: 'all 0.2s' }}>
-                  <Twitter size={18} strokeWidth={2} />
-                </Box>
-                <Box as="a" href="#" aria-label="Instagram" w="40px" h="40px" borderRadius="full" bg="white" borderWidth="1.5px" borderColor="#EFEBE4" display="flex" alignItems="center" justifyContent="center" color="gray.600" _hover={{ bg: '#C65D3A', color: 'white', borderColor: '#C65D3A', transform: 'translateY(-2px)' }} style={{ transition: 'all 0.2s' }}>
-                  <Instagram size={18} strokeWidth={2} />
-                </Box>
-                <Box as="a" href="#" aria-label="Youtube" w="40px" h="40px" borderRadius="full" bg="white" borderWidth="1.5px" borderColor="#EFEBE4" display="flex" alignItems="center" justifyContent="center" color="gray.600" _hover={{ bg: '#C65D3A', color: 'white', borderColor: '#C65D3A', transform: 'translateY(-2px)' }} style={{ transition: 'all 0.2s' }}>
-                  <Youtube size={18} strokeWidth={2} />
-                </Box>
-              </HStack>
-            </VStack>
-
-            {/* Column 2: Kitchen Co-op Menus */}
-            <VStack align="flex-start" spaceY={3}>
-              <Text fontSize="xs" fontWeight="black" color="gray.400" letterSpacing="widest" textTransform="uppercase">
-                Service
-              </Text>
-              <Button variant="link" size="sm" color="gray.600" _hover={{ color: 'black' }} onClick={onViewMenu}>
-                Online Order
-              </Button>
-               <Button variant="link" size="sm" color="gray.600" _hover={{ color: 'black' }} onClick={onViewCatering || onViewMenu}>
-                Pre-Reservation
-              </Button>
-              <Button variant="link" size="sm" color="gray.600" _hover={{ color: 'black' }} onClick={onViewMenu}>
-                24/7 Services
-              </Button>
-              <Button variant="link" size="sm" color="gray.600" _hover={{ color: 'black' }} onClick={onViewMenu}>
-                Foodie Place
-              </Button>
-              <Button variant="link" size="sm" color="gray.600" _hover={{ color: 'black' }} onClick={onViewMenu}>
-                Super Chefs
-              </Button>
-            </VStack>
-
-            {/* Column 3: Logistics & Spots */}
-            <VStack align="flex-start" spaceY={3}>
-              <Text fontSize="xs" fontWeight="black" color="gray.400" letterSpacing="widest" textTransform="uppercase">
-                Quick Links
-              </Text>
-              <Button variant="link" size="sm" color="gray.600" _hover={{ color: 'black' }} onClick={onViewMenu}>
-                Menu Pack
-              </Button>
-              <Button variant="link" size="sm" color="gray.600" _hover={{ color: 'black' }} onClick={onViewMenu}>
-                Reviews
-              </Button>
-              <Button variant="link" size="sm" color="gray.600" _hover={{ color: 'black' }} onClick={onViewMenu}>
-                Blogs
-              </Button>
-              <Button variant="link" size="sm" color="gray.600" _hover={{ color: 'black' }} onClick={onViewMenu}>
-                Reserve Table
-              </Button>
-              <Button variant="link" size="sm" color="gray.600" _hover={{ color: 'black' }} onClick={onViewTracking}>
-                Order Foods
-              </Button>
-            </VStack>
-          </Grid>
-
-          <Flex direction={{ base: 'column', md: 'row' }} justify="space-between" align="center" gap={4} pt={8} borderTopWidth="1px" borderColor="gray.150">
-            <Text fontSize="xs" color="gray.500">
-              © {new Date().getFullYear()} JDH Kitchen. All Rights Reserved.
-            </Text>
-            <HStack spaceX={4} fontSize="xs" color="gray.500">
-              <Button variant="link" size="xs" color="gray.500">Terms of Use</Button>
-              <Text>•</Text>
-              <Button variant="link" size="xs" color="gray.500">Privacy Policy</Button>
-            </HStack>
-          </Flex>
-        </Container>
-      </Box>
-
     </Box>
   );
 };
@@ -1832,13 +1715,13 @@ interface ServiceBulletProps {
 }
 
 const ServiceBullet: React.FC<ServiceBulletProps> = ({ icon, title, desc }) => (
-  <HStack spaceX={3.5} align="flex-start">
-    <Box p={2.5} bg="white" borderRadius="full" shadow="sm" borderWidth="1px" borderColor="gray.150" fontSize="lg">
+  <Stack direction={{ base: 'column', sm: 'row' }} align={{ base: 'center', sm: 'flex-start' }} spaceX={{ base: 0, sm: 3.5 }} spaceY={{ base: 2, sm: 0 }} textAlign={{ base: 'center', sm: 'left' }} w="full">
+    <Box p={2.5} bg="white" borderRadius="full" shadow="sm" borderWidth="1px" borderColor="gray.150" fontSize="lg" flexShrink={0}>
       {icon}
     </Box>
-    <VStack align="flex-start" spaceY={0}>
+    <VStack align={{ base: 'center', sm: 'flex-start' }} spaceY={0}>
       <Text fontSize="sm" fontWeight="black" color="black">{title}</Text>
       <Text fontSize="11px" color="gray.500" lineHeight="tall">{desc}</Text>
     </VStack>
-  </HStack>
+  </Stack>
 );

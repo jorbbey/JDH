@@ -133,7 +133,7 @@ export const Cart: React.FC<CartProps> = ({
 
   return (
     <Box minH="90vh" bg="#FAFAF7" py={4}>
-      <Container maxW="90%">
+      <Container maxW={{ base: "100%", md: "95%", lg: "90%" }} px={{ base: 2.5, sm: 4, md: 6 }}>
         {/* Navigation Breadcrumb */}
         <Button
           variant="ghost"
@@ -167,7 +167,7 @@ export const Cart: React.FC<CartProps> = ({
             <Text color="gray.500" fontSize="xs" maxW="sm" mx="auto" mb={6}>
               You haven't selected any dishes for the current weekly cycle yet. Visit the catalog to view meals.
             </Text>
-            <Button onClick={onBackToMenu} bg="black" color="white" _hover={{ bg: 'gray.800' }} borderRadius="xl" size="md" fontWeight="bold">
+            <Button onClick={onBackToMenu} bg="black" color="white" _hover={{ bg: 'gray.800' }} borderRadius="xl" size="md" fontWeight="bold" py={6} px={8}>
               Explore Fresh Dishes
             </Button>
           </Box>
@@ -179,17 +179,17 @@ export const Cart: React.FC<CartProps> = ({
                 <Flex
                   key={item.menuMealId}
                   bg="white"
-                  p={5}
+                  p={{ base: 4, sm: 5 }}
                   borderRadius="2xl"
                   borderWidth="1px"
                   borderColor="gray.150"
                   shadow="sm"
-                  align="center"
+                  align={{ base: 'stretch', sm: 'center' }}
                   justify="space-between"
-                  flexWrap={{ base: 'wrap', sm: 'nowrap' }}
+                  direction={{ base: 'column', sm: 'row' }}
                   gap={4}
                 >
-                  <HStack spaceX={4.5} flex="1">
+                  <Flex direction={{ base: 'row', xs: 'row' }} gap={4.5} flex="1" align="center">
                     {/* Tiny Thumbnail */}
                     <Box w="80px" h="80px" borderRadius="xl" overflow="hidden" bg="gray.100" flexShrink={0}>
                       <Box
@@ -201,13 +201,13 @@ export const Cart: React.FC<CartProps> = ({
                         objectFit="cover"
                       />
                     </Box>
-
+ 
                     {/* Metadata */}
-                    <VStack align="flex-start" spaceY={1}>
+                    <VStack align="flex-start" spaceY={1} flex="1">
                       <Badge bg="#FAFBF9" color="black" borderWidth="1.5px" borderColor="gray.100" px={1.5} py={0.1} borderRadius="md" fontSize="8.5px" fontWeight="bold">
                         {item.category.toUpperCase()}
                       </Badge>
-                      <Heading as="h4" size="sm" fontWeight="bold" color="black" lineClamp={1}>
+                      <Heading as="h4" size="sm" fontWeight="bold" color="black" lineClamp={2}>
                         {item.mealName}
                       </Heading>
                       <Text fontSize="md" fontWeight="black" color="black">
@@ -220,10 +220,10 @@ export const Cart: React.FC<CartProps> = ({
                         </Text>
                       )}
                     </VStack>
-                  </HStack>
-
+                  </Flex>
+ 
                   {/* Quantity Actions & Remove */}
-                  <HStack spaceX={4} justify="flex-end" w={{ base: 'full', sm: 'auto' }}>
+                  <Flex justify="space-between" align="center" gap={4} w={{ base: 'full', sm: 'auto' }} borderTopWidth={{ base: '1px', sm: '0px' }} borderColor="gray.100" pt={{ base: 3, sm: 0 }}>
                     <HStack spaceX={2}>
                       <Button
                         size="xs"
@@ -249,7 +249,7 @@ export const Cart: React.FC<CartProps> = ({
                         +
                       </Button>
                     </HStack>
-
+ 
                     <Button
                       size="sm"
                       variant="ghost"
@@ -262,7 +262,7 @@ export const Cart: React.FC<CartProps> = ({
                     >
                       <Trash2 size={16} />
                     </Button>
-                  </HStack>
+                  </Flex>
                 </Flex>
               ))}
             </VStack>
@@ -412,6 +412,8 @@ export const Cart: React.FC<CartProps> = ({
                     borderRadius="2xl"
                     fontWeight="bold"
                     shadow="sm"
+                    py={7}
+                    px={10}
                   >
                     <CreditCard size={15} style={{ marginRight: '8px' }} />
                     Proceed with Direct Transfer

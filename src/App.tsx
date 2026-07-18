@@ -21,6 +21,7 @@ import type { MenuMealProgress } from './services/menus';
 import { CustomizeModal } from './components/CustomizeModal';
 import { ContactUs } from './components/ContactUs';
 import { AdminLogin } from './components/AdminLogin';
+import { Footer } from './components/Footer';
 
 export type ViewType =
   | 'landing'
@@ -269,7 +270,7 @@ export default function App() {
                   setIsMobileMenuOpen(false);
                 }}
               >
-                <Box h="50px" display="flex" alignItems="center" overflow="hidden">
+                <Box h={{ base: "36px", sm: "50px" }} display="flex" alignItems="center" overflow="hidden">
                   <Box
                     as="img"
                     src={jdhLogo}
@@ -279,7 +280,7 @@ export default function App() {
                     objectFit="contain"
                   />
                 </Box>
-                <Heading as="h2" size="sm" fontWeight="black" letterSpacing="tight" color="#2D2D2D">
+                <Heading as="h2" fontSize={{ base: "14px", sm: "16px" }} fontWeight="black" letterSpacing="tight" color="#2D2D2D">
                   JDH KITCHEN
                 </Heading>
               </Flex>
@@ -675,6 +676,10 @@ export default function App() {
             />
           )}
         </Box>
+
+        {currentView !== 'admin-dashboard' && currentView !== 'admin-login' && (
+          <Footer onNavigate={(view) => setCurrentView(view as any)} />
+        )}
       </Box>
 
       {/* Global proteins and extras customizer options dialog overlay */}

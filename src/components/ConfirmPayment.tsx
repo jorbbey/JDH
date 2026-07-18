@@ -138,7 +138,7 @@ export const ConfirmPayment: React.FC<ConfirmPaymentProps> = ({
 
   return (
     <Box minH="90vh" bg="#FAFAF7" py={4}>
-      <Container maxW="90%">
+      <Container maxW={{ base: "100%", md: "95%", lg: "90%" }} px={{ base: 2.5, sm: 4, md: 6 }}>
         {/* Breadcrumb Header */}
         <Button
           variant="ghost"
@@ -309,6 +309,8 @@ export const ConfirmPayment: React.FC<ConfirmPaymentProps> = ({
                   shadow="sm"
                   w="full"
                   mt={2}
+                  py={7}
+                  px={10}
                 >
                   Confirm payment proof & Lock order
                 </Button>

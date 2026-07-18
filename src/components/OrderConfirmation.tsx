@@ -176,7 +176,7 @@ export const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
               Join Co-Op Dispatches WhatsApp
             </Button>
 
-            <Grid templateColumns="1fr 1fr" gap={3}>
+            <Grid templateColumns={{ base: '1fr', sm: '1fr 1fr' }} gap={3}>
               <Button
                 onClick={onNavigateTracking}
                 variant="outline"

@@ -145,7 +145,7 @@ export const MenuList: React.FC<MenuListProps> = ({
 
   return (
     <Box minH="90vh" bg="#FAFAF7" py={4}>
-      <Container maxW="90%">
+      <Container maxW={{ base: "100%", md: "95%", lg: "90%" }} px={{ base: 2.5, sm: 4, md: 6 }}>
         {/* Navigation Breadcrumbs & Cart Indicator */}
         <Flex justify="space-between" align="center" mb={6} flexWrap="wrap" gap={4}>
           <Button
@@ -271,7 +271,7 @@ export const MenuList: React.FC<MenuListProps> = ({
             </Text>
           </Box>
         ) : (
-          <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }} gap={8}>
+          <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }} gap={{ base: 5, md: 8 }}>
             {filteredMeals.map((meal) => {
               const orderPct = Math.min(
                 100,
@@ -328,7 +328,7 @@ export const MenuList: React.FC<MenuListProps> = ({
                   </Box>
 
                   {/* Meal Body */}
-                  <VStack align="stretch" p={5} spaceY={5}>
+                  <VStack align="stretch" p={{ base: 6.5, sm: 5 }} spaceY={5}>
                     <VStack align="flex-start" spaceY={1.5}>
                       <Heading as="h3" size="md" fontWeight="bold" color="black" lineClamp={1}>
                         {meal.meal_name}

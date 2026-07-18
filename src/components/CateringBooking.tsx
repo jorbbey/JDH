@@ -177,7 +177,7 @@ export const CateringBooking: React.FC<CateringBookingProps> = ({
 
   return (
     <Box minH="90vh" bg="#FAFAF7" py={4}>
-      <Container maxW="90%">
+      <Container maxW={{ base: "100%", md: "95%", lg: "90%" }} px={{ base: 2.5, sm: 4, md: 6 }}>
         {/* Navigation Breadcrumbs */}
         <Button
           variant="ghost"

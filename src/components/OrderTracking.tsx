@@ -240,7 +240,7 @@ export const OrderTracking: React.FC<OrderTrackingProps> = ({
 
   return (
     <Box minH="90vh" bg="#FAFAF7" py={4}>
-      <Container maxW="90%">
+      <Container maxW={{ base: "100%", md: "95%", lg: "90%" }} px={{ base: 2.5, sm: 4, md: 6 }}>
         {/* Navigation Breadcrumbs */}
         <Button
           variant="ghost"
@@ -413,8 +413,8 @@ export const OrderTracking: React.FC<OrderTrackingProps> = ({
                           <Text fontSize="10px" color="gray.500" italic>{statusInfo.desc}</Text>
                         </Flex>
 
-                        {/* Visual Step Points */}
-                        <Grid templateColumns="repeat(5, 1fr)" gap={2} position="relative" pt={2}>
+                        {/* Visual Step Points - Desktop Horizontal Stepper */}
+                        <Grid display={{ base: 'none', sm: 'grid' }} templateColumns="repeat(5, 1fr)" gap={2} position="relative" pt={2}>
                           {['Deposit Sent', 'Reviewing', 'Batch Success', 'Cooking Prep', 'Hostel Gate'].map((stepName, index) => {
                             const isPast = statusInfo.step >= index;
                             return (
@@ -440,6 +440,36 @@ export const OrderTracking: React.FC<OrderTrackingProps> = ({
                             );
                           })}
                         </Grid>
+
+                        {/* Visual Step Points - Mobile Vertical Stepper */}
+                        <VStack display={{ base: 'flex', sm: 'none' }} align="stretch" spaceY={3} pt={2}>
+                          {['Deposit Sent', 'Reviewing', 'Batch Success', 'Cooking Prep', 'Hostel Gate'].map((stepName, index) => {
+                            const isPast = statusInfo.step >= index;
+                            const isCurrent = statusInfo.step === index;
+                            return (
+                              <HStack key={index} spaceX={3} align="center">
+                                <Box
+                                  w="20px"
+                                  h="20px"
+                                  borderRadius="full"
+                                  bg={isPast ? '#C65D3A' : 'gray.200'}
+                                  display="flex"
+                                  justifyContent="center"
+                                  alignItems="center"
+                                  color="white"
+                                  fontSize="9px"
+                                  fontWeight="bold"
+                                  flexShrink={0}
+                                >
+                                  {isPast ? '✓' : index + 1}
+                                </Box>
+                                <Text fontSize="11px" fontWeight={isCurrent ? "extrabold" : "bold"} color={isPast ? 'black' : 'gray.400'}>
+                                  {stepName} {isCurrent && "• (Current Step)"}
+                                </Text>
+                              </HStack>
+                            );
+                          })}
+                        </VStack>
                       </VStack>
 
                       {/* Display Rejections Form Tracing (Manual verification bounce handler) */}
