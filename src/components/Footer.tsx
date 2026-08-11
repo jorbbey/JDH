@@ -91,6 +91,12 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             <Button variant="link" size="sm" color="gray.600" _hover={{ color: 'black' }} onClick={() => onNavigate('order-tracking')}>
               Track My Order
             </Button>
+            <Button variant="link" size="sm" color="gray.600" _hover={{ color: 'black' }} onClick={() => onNavigate('help')}>
+              Help & FAQ
+            </Button>
+            <Button variant="link" size="sm" color="gray.600" _hover={{ color: 'black' }} onClick={() => onNavigate('contact')}>
+              Contact Us
+            </Button>
           </VStack>
         </Grid>
 

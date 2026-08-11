@@ -20,6 +20,7 @@ import { authService } from './services/auth';
 import type { MenuMealProgress } from './services/menus';
 import { CustomizeModal } from './components/CustomizeModal';
 import { ContactUs } from './components/ContactUs';
+import { HelpFAQ } from './components/HelpFAQ';
 import { AdminLogin } from './components/AdminLogin';
 import { Footer } from './components/Footer';
 
@@ -34,7 +35,8 @@ export type ViewType =
   | 'admin-dashboard'
   | 'catering'
   | 'admin-login'
-  | 'contact';
+  | 'contact'
+  | 'help';
 
 export interface CartItem {
   menuMealId: string;
@@ -57,6 +59,7 @@ export default function App() {
     if (path === '/tracking') return 'order-tracking';
     if (path === '/catering') return 'catering';
     if (path === '/contact') return 'contact';
+    if (path === '/help' || path === '/faq') return 'help';
     if (path === '/admin/login' || path.startsWith('/admin/login')) return 'admin-login';
     if (path === '/admin/dashboard' || path.startsWith('/admin/dashboard')) return 'admin-dashboard';
     return 'landing';
@@ -78,6 +81,7 @@ export default function App() {
       case 'order-tracking': path = '/tracking'; break;
       case 'catering': path = '/catering'; break;
       case 'contact': path = '/contact'; break;
+      case 'help': path = '/help'; break;
       case 'admin-login': path = '/admin/login'; break;
       case 'admin-dashboard': path = '/admin/dashboard'; break;
     }
@@ -340,6 +344,18 @@ export default function App() {
                   color="gray.600"
                   _hover={{ bg: 'gray.100', color: 'black' }}
                   size="sm"
+                  onClick={() => setCurrentView('help')}
+                  fontWeight="bold"
+                  borderRadius="lg"
+                >
+                  Help & FAQ
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  color="gray.600"
+                  _hover={{ bg: 'gray.100', color: 'black' }}
+                  size="sm"
                   onClick={() => setCurrentView('contact')}
                   fontWeight="bold"
                   borderRadius="lg"
@@ -518,6 +534,21 @@ export default function App() {
                     size="sm"
                     fontWeight="bold"
                     onClick={() => {
+                      setCurrentView('help');
+                      setIsMobileMenuOpen(false);
+                    }}
+                    w="full"
+                  >
+                    Help & FAQ
+                  </Button>
+
+                  <Button
+                    variant="ghost"
+                    justifyContent="flex-start"
+                    color="gray.600"
+                    size="sm"
+                    fontWeight="bold"
+                    onClick={() => {
                       setCurrentView('contact');
                       setIsMobileMenuOpen(false);
                     }}
@@ -655,6 +686,15 @@ export default function App() {
           {currentView === 'contact' && (
             <ContactUs
               onNavigateHome={() => setCurrentView('landing')}
+            />
+          )}
+
+          {currentView === 'help' && (
+            <HelpFAQ
+              onNavigateMenu={() => setCurrentView('menu-list')}
+              onNavigateTracking={() => setCurrentView('order-tracking')}
+              onNavigateContact={() => setCurrentView('contact')}
+              onNavigateCatering={() => setCurrentView('catering')}
             />
           )}
 
