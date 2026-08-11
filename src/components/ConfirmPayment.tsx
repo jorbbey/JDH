@@ -43,7 +43,9 @@ export const ConfirmPayment: React.FC<ConfirmPaymentProps> = ({
   onSuccess,
   onCancel,
 }) => {
-  const [copied, setCopied] = useState(false);
+  const [copiedAccount, setCopiedAccount] = useState(false);
+  const [copiedAmount, setCopiedAmount] = useState(false);
+  const [copiedCode, setCopiedCode] = useState(false);
   const [txRef, setTxRef] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -60,8 +62,21 @@ export const ConfirmPayment: React.FC<ConfirmPaymentProps> = ({
 
   const copyAccountNumber = () => {
     navigator.clipboard.writeText(BANK_DETAILS.accountNumber);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setCopiedAccount(true);
+    setTimeout(() => setCopiedAccount(false), 2000);
+  };
+
+  const copyAmount = () => {
+    navigator.clipboard.writeText(totalAmount.toString());
+    setCopiedAmount(true);
+    setTimeout(() => setCopiedAmount(false), 2000);
+  };
+
+  const copyOrderCode = () => {
+    const formattedCode = `#${orderId.toUpperCase()}`;
+    navigator.clipboard.writeText(formattedCode);
+    setCopiedCode(true);
+    setTimeout(() => setCopiedCode(false), 2000);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,39 +113,41 @@ export const ConfirmPayment: React.FC<ConfirmPaymentProps> = ({
     e.preventDefault();
     setErrorMsg(null);
 
-    if (!selectedFile) {
-      setErrorMsg('Please upload a screenshot or photo of your bank transfer receipt.');
+    // Require either a receipt screenshot OR a sender name / reference
+    if (!selectedFile && !txRef.trim()) {
+      setErrorMsg('Please upload a screenshot receipt OR enter your bank sender name so we can verify your transfer.');
       return;
     }
 
     setIsUploading(true);
     try {
-      // 1. Upload proof file to Supabase storage or get mock url
-      const imageUrl = await paymentService.uploadProofImageFile(selectedFile);
+      let imageUrl = null;
+      if (selectedFile) {
+        imageUrl = await paymentService.uploadProofImageFile(selectedFile);
+      }
 
-      // 2. Submit payment proof to DB and transition order state
+      // Submit payment proof to DB and transition order state
       await paymentService.submitPaymentProof({
         order_id: orderId,
-        transaction_reference: txRef.trim() || undefined,
-        proof_image_url: imageUrl,
+        transaction_reference: txRef.trim() || 'Direct Transfer Confirmed',
+        proof_image_url: imageUrl || undefined,
       });
 
-      // 3. Fire background order placed email notification (non-blocking)
+      // Fire background order placed email notification (non-blocking)
       try {
         web3FormsService.sendOrderPlacedNotification(
           orderId,
           totalAmount,
           txRef.trim() || undefined,
-          imageUrl
+          imageUrl || undefined
         ).catch(e => console.error('Background notification error:', e));
       } catch (notifyErr) {
         console.error('Error initiating order placed notification:', notifyErr);
       }
 
-      // 4. Fire success transition callback
       onSuccess();
     } catch (err: any) {
-      setErrorMsg(err.message || 'Error uploading receipt. Please try another image.');
+      setErrorMsg(err.message || 'Error confirming payment. Please try again or contact support.');
     } finally {
       setIsUploading(false);
     }
@@ -148,25 +165,97 @@ export const ConfirmPayment: React.FC<ConfirmPaymentProps> = ({
           onClick={onCancel}
           borderRadius="xl"
           fontWeight="bold"
-          mb={8}
+          mb={6}
         >
           <ArrowLeft size={16} style={{ marginRight: '6px' }} />
           Back to Basket
         </Button>
 
-        <VStack align="stretch" spaceY={8}>
-          
-          {/* Header Description */}
-          <VStack align="flex-start" spaceY={2.5} bg="white" p={8} borderRadius="3xl" borderWidth="1px" borderColor="gray.150" shadow="sm">
-            <Badge bg="orange.50" color="orange.700" px={2.5} py={0.5} borderRadius="md" fontSize="9px" fontWeight="bold">
-              DIRECT PERSONAL TRANSFER
+        {/* Stepper Header */}
+        <Flex justify="space-between" align="center" mb={8} bg="white" p={4} borderRadius="2xl" borderWidth="1px" borderColor="gray.150" shadow="sm" overflowX="auto">
+          <HStack spaceX={3} opacity={0.8} flexShrink={0}>
+            <Flex w={7} h={7} borderRadius="full" bg="emerald.500" color="white" align="center" justify="center" fontWeight="black" fontSize="xs">
+              ✓
+            </Flex>
+            <VStack align="flex-start" spaceY={0}>
+              <Text fontSize="xs" fontWeight="bold" color="black">Basket & Details</Text>
+              <Text fontSize="9px" color="emerald.600" fontWeight="bold">Completed</Text>
+            </VStack>
+          </HStack>
+
+          <Box h="1px" bg="gray.200" flex="1" mx={4} minW="30px" />
+
+          <HStack spaceX={3} flexShrink={0}>
+            <Flex w={7} h={7} borderRadius="full" bg="#C65D3A" color="white" align="center" justify="center" fontWeight="bold" fontSize="xs">
+              2
+            </Flex>
+            <VStack align="flex-start" spaceY={0}>
+              <Text fontSize="xs" fontWeight="bold" color="black">Bank Transfer</Text>
+              <Text fontSize="9px" color="#C65D3A" fontWeight="bold">Current Step</Text>
+            </VStack>
+          </HStack>
+
+          <Box h="1px" bg="gray.200" flex="1" mx={4} minW="30px" />
+
+          <HStack spaceX={3} opacity={0.6} flexShrink={0}>
+            <Flex w={7} h={7} borderRadius="full" bg="gray.200" color="gray.600" align="center" justify="center" fontWeight="bold" fontSize="xs">
+              3
+            </Flex>
+            <VStack align="flex-start" spaceY={0}>
+              <Text fontSize="xs" fontWeight="bold" color="gray.700">Get Pickup Code</Text>
+              <Text fontSize="9px" color="gray.400">Final Step</Text>
+            </VStack>
+          </HStack>
+        </Flex>
+
+        <VStack align="stretch" spaceY={6}>
+          {/* Main Title & Order Code Highlight */}
+          <VStack align="flex-start" spaceY={4} bg="white" p={{ base: 5, md: 8 }} borderRadius="3xl" borderWidth="1px" borderColor="gray.150" shadow="sm">
+            <Badge bg="orange.50" color="orange.800" px={3} py={1} borderRadius="lg" fontSize="10px" fontWeight="black">
+              DIRECT BANK TRANSFER
             </Badge>
             <Heading as="h1" size="xl" fontWeight="black" color="black" letterSpacing="tight">
-              Pay ₦{totalAmount.toLocaleString()} to Confirm Pre-Order
+              Transfer ₦{totalAmount.toLocaleString()} to Confirm Your Order
             </Heading>
-            <Text fontSize="xs" color="gray.500" lineHeight="relaxed">
-              To keep our food pricing at low street values, we coordinate orders on a direct personal basis without expensive payment gateways or corporate escrow. Simply make a direct deposit or transfer using your preferred banking app to the personal/cooperative bank account below, and upload the screenshot proof. Our student coordination team will manually check and verify the receipt privately!
+            <Text fontSize="xs" color="gray.600" lineHeight="relaxed">
+              Complete your transfer using any mobile app (OPay, PalmPay, GTBank, Kuda, FirstBank, USSD, etc.).
             </Text>
+
+            {/* UNMISSABLE ORDER CODE CARD */}
+            <Box bg="#FFF3EB" borderWidth="2px" borderColor="#C65D3A" p={4} borderRadius="2xl" w="full" shadow="sm">
+              <Flex justify="space-between" align="center" flexWrap="wrap" gap={3}>
+                <HStack spaceX={3}>
+                  <Box bg="#C65D3A" color="white" p={2.5} borderRadius="xl" flexShrink={0}>
+                    <Copy size={20} />
+                  </Box>
+                  <VStack align="flex-start" spaceY={0}>
+                    <Text fontSize="10px" fontWeight="black" color="#C65D3A" letterSpacing="widest" textTransform="uppercase">
+                      YOUR ORDER CODE
+                    </Text>
+                    <Text fontSize={{ base: "xl", sm: "2xl" }} fontWeight="950" color="black" letterSpacing="wider" fontFamily="mono">
+                      #{orderId.toUpperCase()}
+                    </Text>
+                  </VStack>
+                </HStack>
+                <Button
+                  size="sm"
+                  bg="#C65D3A"
+                  color="white"
+                  _hover={{ bg: '#A94B2B' }}
+                  onClick={copyOrderCode}
+                  borderRadius="xl"
+                  fontWeight="bold"
+                  px={4}
+                  py={2.5}
+                >
+                  <Copy size={14} style={{ marginRight: '6px' }} />
+                  {copiedCode ? 'Copied!' : 'Copy Order Code'}
+                </Button>
+              </Flex>
+              <Text fontSize="10px" color="gray.600" fontWeight="bold" mt={2}>
+                💡 Tip: Put this order code in your bank transfer message so we find your money fast.
+              </Text>
+            </Box>
           </VStack>
 
           {errorMsg && (
@@ -176,100 +265,110 @@ export const ConfirmPayment: React.FC<ConfirmPaymentProps> = ({
             </Box>
           )}
 
-          {/* Account Detail Box */}
-          <Box bg="white" p={8} borderRadius="3xl" borderWidth="1px" borderColor="gray.150" shadow="sm">
+          {/* STEP 1: Bank Account Details Card */}
+          <Box bg="white" p={{ base: 5, md: 8 }} borderRadius="3xl" borderWidth="1.5px" borderColor="#C65D3A" shadow="md">
             <VStack align="stretch" spaceY={5}>
-              <Heading as="h3" size="sm" fontWeight="bold" color="black" pb={2} borderBottomWidth="1.5px" borderColor="gray.100">
-                Co-Op Routing Destination
-              </Heading>
+              <Flex justify="space-between" align="center" borderBottomWidth="1.5px" borderColor="gray.100" pb={3}>
+                <HStack spaceX={2}>
+                  <Badge bg="#C65D3A" color="white" px={2.5} py={0.5} borderRadius="full" fontSize="10px" fontWeight="black">
+                    STEP 1
+                  </Badge>
+                  <Heading as="h3" size="sm" fontWeight="bold" color="black">
+                    Make Bank Transfer
+                  </Heading>
+                </HStack>
+                <Text fontSize="11px" fontWeight="bold" color="gray.500">
+                  Instant Verification
+                </Text>
+              </Flex>
 
-              <Grid templateColumns={{ base: '1fr', md: '1.2fr 0.8fr' }} gap={6} alignItems="center">
-                <VStack align="flex-start" spaceY={3}>
-                  <HStack spaceX={3}>
-                    <Building size={16} color="gray" />
-                    <VStack align="flex-start" spaceY={0}>
-                      <Text fontSize="10px" color="gray.400" fontWeight="bold">RECIPIENT BANK</Text>
-                      <Text fontSize="xs" fontWeight="bold" color="black">{BANK_DETAILS.bankName}</Text>
-                    </VStack>
-                  </HStack>
-
-                  <HStack spaceX={3}>
-                    <FileText size={16} color="gray" />
-                    <VStack align="flex-start" spaceY={0}>
-                      <Text fontSize="10px" color="gray.400" fontWeight="bold">ACCOUNT NAME</Text>
-                      <Text fontSize="xs" fontWeight="bold" color="black">{BANK_DETAILS.accountName}</Text>
-                    </VStack>
-                  </HStack>
-                </VStack>
-
-                <Box bg="#FAFAF7" p={4} borderRadius="2xl" borderWidth="1px" borderColor="gray.200" align="center">
-                  <Text fontSize="9px" color="gray.400" fontWeight="bold">SECURE ACCOUNT NUMBER</Text>
-                  <Text fontSize="xl" fontWeight="black" color="black" my={1.5}>
+              <Grid templateColumns={{ base: '1fr', md: '1fr 1fr' }} gap={6}>
+                {/* Account Number Focus */}
+                <Box bg="#FFF8F0" p={5} borderRadius="2xl" borderWidth="1.5px" borderColor="#F3D1C5" textAlign="center">
+                  <Text fontSize="10px" color="gray.500" fontWeight="bold" letterSpacing="wider" textTransform="uppercase">
+                    ACCOUNT NUMBER
+                  </Text>
+                  <Text fontSize={{ base: "2xl", sm: "3xl" }} fontWeight="950" color="black" my={1.5} letterSpacing="wider">
                     {BANK_DETAILS.accountNumber}
                   </Text>
                   <Button
-                    size="xs"
+                    size="sm"
                     bg="black"
                     _hover={{ bg: 'gray.800' }}
                     color="white"
                     onClick={copyAccountNumber}
-                    borderRadius="lg"
+                    borderRadius="xl"
                     fontWeight="bold"
-                    px={4}
+                    px={5}
+                    py={4}
+                    w="full"
                   >
-                    <Copy size={12} style={{ marginRight: '6px' }} />
-                    {copied ? 'Copied' : 'Copy Number'}
+                    <Copy size={14} style={{ marginRight: '6px' }} />
+                    {copiedAccount ? 'Copied to Clipboard!' : 'Copy Account Number'}
                   </Button>
                 </Box>
+
+                {/* Bank Name, Account Name & Amount */}
+                <VStack align="stretch" justify="center" spaceY={3} bg="#FAFAF7" p={5} borderRadius="2xl" borderWidth="1px" borderColor="gray.200">
+                  <HStack justify="space-between">
+                    <Text fontSize="xs" color="gray.500" fontWeight="bold">BANK NAME:</Text>
+                    <Badge bg="emerald.100" color="emerald.800" fontSize="xs" fontWeight="black" px={2.5} py={0.5} borderRadius="md">
+                      {BANK_DETAILS.bankName.toUpperCase()}
+                    </Badge>
+                  </HStack>
+
+                  <HStack justify="space-between">
+                    <Text fontSize="xs" color="gray.500" fontWeight="bold">ACCOUNT NAME:</Text>
+                    <Text fontSize="xs" fontWeight="black" color="black">{BANK_DETAILS.accountName}</Text>
+                  </HStack>
+
+                  <HStack justify="space-between" pt={2} borderTopWidth="1px" borderStyle="dashed" borderColor="gray.250">
+                    <Text fontSize="xs" color="gray.500" fontWeight="bold">EXACT AMOUNT:</Text>
+                    <HStack spaceX={2}>
+                      <Text fontSize="md" fontWeight="900" color="#C65D3A">₦{totalAmount.toLocaleString()}</Text>
+                      <Button size="xs" variant="outline" borderColor="gray.300" onClick={copyAmount} borderRadius="md">
+                        {copiedAmount ? 'Copied' : 'Copy'}
+                      </Button>
+                    </HStack>
+                  </HStack>
+                </VStack>
               </Grid>
             </VStack>
           </Box>
 
-          {/* Form Verification Submission */}
-          <Box bg="white" p={8} borderRadius="3xl" borderWidth="1px" borderColor="gray.150" shadow="sm">
+          {/* STEP 2: Submit Proof / Reference */}
+          <Box bg="white" p={{ base: 5, md: 8 }} borderRadius="3xl" borderWidth="1px" borderColor="gray.150" shadow="sm">
             <form onSubmit={handleSubmitProof}>
               <VStack align="stretch" spaceY={6}>
-                <Heading as="h3" size="sm" fontWeight="bold" color="black" pb={2} borderBottomWidth="1.5px" borderColor="gray.100">
-                  Submit Receipt Credentials
-                </Heading>
+                <HStack spaceX={2} borderBottomWidth="1.5px" borderColor="gray.100" pb={3}>
+                  <Badge bg="black" color="white" px={2.5} py={0.5} borderRadius="full" fontSize="10px" fontWeight="black">
+                    STEP 2
+                  </Badge>
+                  <Heading as="h3" size="sm" fontWeight="bold" color="black">
+                    Upload Receipt or Transfer Details
+                  </Heading>
+                </HStack>
 
-                {/* Optional Sender Name/Tx Reference */}
+                {/* Drag and Drop Screenshot Uploader */}
                 <VStack align="flex-start" spaceY={1.5}>
-                  <Text fontSize="xs" fontWeight="bold" color="gray.600">Sender Name / Transfer Reference (Optional)</Text>
-                  <Input
-                    placeholder="e.g. Adebayo Damilola - Sterling Transfer App"
-                    value={txRef}
-                    onChange={(e) => setTxRef(e.target.value)}
-                    bg="#FAFAF7"
-                    borderColor="gray.250"
-                    _focus={{ borderColor: 'black' }}
-                    borderRadius="xl"
-                    size="md"
-                    color="black"
-                  />
-                  <Text fontSize="10px" color="gray.400">Helps our admin pair the bank log to your record instantly.</Text>
-                </VStack>
-
-                {/* Drag and Drop File Input Uploader (Accessibility & Guidelines Compliant) */}
-                <VStack align="flex-start" spaceY={1.5}>
-                  <Text fontSize="xs" fontWeight="bold" color="gray.600">Proof Image Document *</Text>
+                  <Text fontSize="xs" fontWeight="bold" color="gray.700">Option A: Upload Screenshot Receipt</Text>
                   <Box
                     w="full"
-                    py={10}
+                    py={8}
                     px={6}
-                    bg={isDragOver ? '#FAFAF7' : 'white'}
+                    bg={isDragOver ? '#FFF8F0' : '#FAFAF7'}
                     borderWidth="2px"
                     borderStyle="dashed"
                     borderColor={isDragOver ? '#C65D3A' : 'gray.250'}
                     borderRadius="2xl"
-                    _hover={{ borderColor: 'black', bg: '#FAFAF7' }}
+                    _hover={{ borderColor: '#C65D3A', bg: '#FFF8F0' }}
                     cursor="pointer"
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
                     onClick={triggerFileInputClick}
                     transition="all 0.2s ease"
-                    align="center"
+                    textAlign="center"
                   >
                     <input
                       type="file"
@@ -279,21 +378,37 @@ export const ConfirmPayment: React.FC<ConfirmPaymentProps> = ({
                       style={{ display: 'none' }}
                     />
                     <VStack spaceY={2}>
-                      <Upload size={28} color={isDragOver ? '#C65D3A' : 'gray'} />
+                      <Upload size={28} color={isDragOver ? '#C65D3A' : '#64748B'} />
                       <Text fontSize="xs" fontWeight="bold" color="black">
-                        {selectedFile ? 'Change Receipt File' : 'Drag & drop your screenshot here, or click to browse'}
+                        {selectedFile ? 'Change Receipt Screenshot' : 'Tap to select screenshot image, or drag & drop here'}
                       </Text>
                       <Text fontSize="10px" color="gray.400">Supports PNG, JPG, or JPEG formats up to 5MB</Text>
                     </VStack>
                   </Box>
 
-                  {/* Selected File Badge */}
                   {selectedFile && (
-                    <Flex bg="emerald.50" color="emerald.700" p={3} borderRadius="xl" align="center" gap={2} mt={1} fontSize="11px" fontWeight="bold" w="full">
-                      <CheckCircle size={14} />
-                      <Text>Success: Selected File: <strong>{selectedFile.name}</strong> ({(selectedFile.size / 1024).toFixed(1)} KB)</Text>
+                    <Flex bg="emerald.50" color="emerald.800" p={3} borderRadius="xl" align="center" gap={2} mt={1} fontSize="11px" fontWeight="bold" w="full">
+                      <CheckCircle size={14} color="#059669" />
+                      <Text>Selected Screenshot: <strong>{selectedFile.name}</strong> ({(selectedFile.size / 1024).toFixed(1)} KB)</Text>
                     </Flex>
                   )}
+                </VStack>
+
+                {/* Sender Name / Bank Reference */}
+                <VStack align="flex-start" spaceY={1.5}>
+                  <Text fontSize="xs" fontWeight="bold" color="gray.700">Option B: Bank Sender Name / Reference</Text>
+                  <Input
+                    placeholder="e.g. Ebuka Adesina (PalmPay Transfer)"
+                    value={txRef}
+                    onChange={(e) => setTxRef(e.target.value)}
+                    bg="#FAFAF7"
+                    borderColor="gray.250"
+                    _focus={{ borderColor: 'black' }}
+                    borderRadius="xl"
+                    size="md"
+                    color="black"
+                  />
+                  <Text fontSize="10px" color="gray.400">Enter the name on your bank account so our kitchen team can match your deposit.</Text>
                 </VStack>
 
                 {/* Submit Trigger Actions */}
@@ -306,13 +421,15 @@ export const ConfirmPayment: React.FC<ConfirmPaymentProps> = ({
                   size="lg"
                   borderRadius="2xl"
                   fontWeight="bold"
-                  shadow="sm"
+                  shadow="md"
                   w="full"
                   mt={2}
                   py={7}
                   px={10}
+                  fontSize="md"
                 >
-                  Confirm payment proof & Lock order
+                  <CheckCircle size={18} style={{ marginRight: '8px' }} />
+                  I Have Transferred ₦{totalAmount.toLocaleString()} — Confirm Order
                 </Button>
               </VStack>
             </form>

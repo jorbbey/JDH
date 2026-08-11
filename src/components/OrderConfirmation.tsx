@@ -25,6 +25,7 @@ import {
   MapPin,
   Calendar,
   Lock,
+  Copy,
 } from 'lucide-react';
 import { orderService, DetailedOrder } from '../services/orders';
 
@@ -43,6 +44,8 @@ export const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
 }) => {
   const [order, setOrder] = useState<DetailedOrder | null>(null);
   const [loading, setLoading] = useState(true);
+  const [copiedCode, setCopiedCode] = useState(false);
+  const [copiedPickup, setCopiedPickup] = useState(false);
 
   useEffect(() => {
     async function fetchOrder() {
@@ -65,6 +68,18 @@ export const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
   // Derive codes
   const displayPickupCode = order?.pickup_code_direct || `ML-${orderId.slice(0, 5).toUpperCase()}`;
 
+  const copyOrderCode = () => {
+    navigator.clipboard.writeText(`#${orderId.toUpperCase()}`);
+    setCopiedCode(true);
+    setTimeout(() => setCopiedCode(false), 2000);
+  };
+
+  const copyPickupCode = () => {
+    navigator.clipboard.writeText(displayPickupCode);
+    setCopiedPickup(true);
+    setTimeout(() => setCopiedPickup(false), 2000);
+  };
+
   // Direct Delivery Guidelines matching co-op schedules
   const deliveryLocation = order?.hostel_name || 'Front of school / Coke Villa / SICT gate';
   const pickupTime = '10:00 AM';
@@ -81,64 +96,111 @@ export const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
           </Box>
 
           <Heading as="h1" size="2xl" fontWeight="black" color="black" mb={2} letterSpacing="tight">
-            Order Securely Placed!
+            Order Placed Successfully!
           </Heading>
           
           <Badge bg="emerald.50" color="emerald.700" px={3} py={1} borderRadius="lg" fontSize="10.5px" fontWeight="bold" mb={6}>
-            STATUS: PAYMENT UNDER VERIFICATION
+            STATUS: CHECKING YOUR PAYMENT
           </Badge>
 
           <Text fontSize="xs" color="gray.600" mb={8} lineHeight="relaxed" maxW="xl">
-            Thank you for dining with <strong>JDH Kitchen Cooperative</strong>. Your pre-order is registered successfully. Your meal will be delivered directly to your selected location.
+            Thank you for ordering from <strong>JDH Kitchen</strong>! We have received your order. We will bring your food to your selected pickup location.
           </Text>
 
-          {/* Core Collection Pass Panel Section */}
-          <Box bg="#FFF8F0" p={6} borderRadius="3xl" borderWidth="1.5px" borderColor="#C65D3A" mb={8} textAlign="left">
-            <VStack spaceY={4} align="stretch">
-              <HStack spaceX={2.5}>
-                <Lock size={16} color="#C65D3A" />
-                <Heading as="h4" size="xs" fontWeight="black" color="#C65D3A" textTransform="uppercase" letterSpacing="wide">
-                  Your Secured Delivery Pass
-                </Heading>
-              </HStack>
+          {/* UNMISSABLE ORDER CODE & PICKUP PASS CARD */}
+          <Box bg="black" color="white" p={{ base: 5, md: 7 }} borderRadius="3xl" mb={8} textAlign="left" shadow="xl" position="relative" overflow="hidden">
+            <VStack spaceY={5} align="stretch">
+              <Flex justify="space-between" align="center" borderBottomWidth="1px" borderColor="gray.800" pb={3} flexWrap="wrap" gap={2}>
+                <HStack spaceX={2.5}>
+                  <Box bg="#C65D3A" color="white" p={1.5} borderRadius="lg">
+                    <Lock size={16} />
+                  </Box>
+                  <Heading as="h4" size="xs" fontWeight="black" color="white" textTransform="uppercase" letterSpacing="wider">
+                    YOUR ORDER CODES (TAKE A SCREENSHOT NOW)
+                  </Heading>
+                </HStack>
+                <Badge bg="orange.500" color="white" px={2.5} py={0.5} borderRadius="full" fontSize="9px" fontWeight="black">
+                  KEEP FOR PICKUP
+                </Badge>
+              </Flex>
 
-              <Grid templateColumns={{ base: '1fr', md: '1.2fr 0.8fr' }} gap={6} pt={2} alignItems="center">
-                <VStack align="stretch" spaceY={3.5}>
-                  <HStack spaceX={3} align="flex-start">
-                    <MapPin size={16} color="black" style={{ marginTop: '2px', flexShrink: 0 }} />
-                    <VStack align="flex-start" spaceY={0}>
-                      <Text fontSize="9px" color="gray.450" fontWeight="bold">DELIVERY LOCATION</Text>
-                      <Text fontSize="xs" fontWeight="bold" color="black">{deliveryLocation}</Text>
-                    </VStack>
-                  </HStack>
+              <Grid templateColumns={{ base: '1fr', md: '1fr 1fr' }} gap={4}>
+                {/* 1. ORDER REFERENCE CODE */}
+                <Box bg="gray.900" p={5} borderRadius="2xl" borderWidth="1.5px" borderColor="#C65D3A" textAlign="center">
+                  <Text fontSize="9px" color="orange.300" fontWeight="black" letterSpacing="widest" textTransform="uppercase">
+                    ORDER CODE
+                  </Text>
+                  <Text fontSize={{ base: "xl", sm: "2xl" }} fontWeight="950" color="white" my={1.5} letterSpacing="wider" fontFamily="mono">
+                    #{orderId.toUpperCase()}
+                  </Text>
+                  <Button
+                    size="xs"
+                    bg="#C65D3A"
+                    _hover={{ bg: '#A94B2B' }}
+                    color="white"
+                    onClick={copyOrderCode}
+                    borderRadius="xl"
+                    fontWeight="bold"
+                    px={4}
+                    py={2}
+                    w="full"
+                  >
+                    <Copy size={12} style={{ marginRight: '6px' }} />
+                    {copiedCode ? 'Copied!' : 'Copy Order Code'}
+                  </Button>
+                </Box>
 
-                  <HStack spaceX={3} align="flex-start">
-                    <Calendar size={16} color="black" style={{ marginTop: '2px', flexShrink: 0 }} />
-                    <VStack align="flex-start" spaceY={0}>
-                      <Text fontSize="9px" color="gray.450" fontWeight="bold">DELIVERY DATE</Text>
-                      <Text fontSize="xs" fontWeight="bold" color="black">{pickupDate}</Text>
-                    </VStack>
-                  </HStack>
-
-                  <HStack spaceX={3} align="flex-start">
-                    <Clock size={16} color="black" style={{ marginTop: '2px', flexShrink: 0 }} />
-                    <VStack align="flex-start" spaceY={0}>
-                      <Text fontSize="9px" color="gray.450" fontWeight="bold">DELIVERY TIME WINDOW</Text>
-                      <Text fontSize="xs" fontWeight="bold" color="black">{pickupTime}</Text>
-                    </VStack>
-                  </HStack>
-                </VStack>
-
-                {/* Pickup Code Display */}
-                <Box bg="white" p={4.5} borderRadius="2xl" borderWidth="1.5px" borderColor="#C65D3A" align="center" shadow="sm">
-                  <Text fontSize="8.5px" color="gray.400" fontWeight="bold" letterSpacing="wider">PICKUP CODE</Text>
-                  <Text fontSize="3xl" fontWeight="black" color="#C65D3A" my={1.5}>
+                {/* 2. PICKUP PASS CODE */}
+                <Box bg="gray.900" p={5} borderRadius="2xl" borderWidth="1.5px" borderColor="emerald.500" textAlign="center">
+                  <Text fontSize="9px" color="emerald.300" fontWeight="black" letterSpacing="widest" textTransform="uppercase">
+                    FOOD PICKUP CODE
+                  </Text>
+                  <Text fontSize={{ base: "xl", sm: "2xl" }} fontWeight="950" color="emerald.400" my={1.5} letterSpacing="wider" fontFamily="mono">
                     {displayPickupCode}
                   </Text>
-                  <Text fontSize="9.5px" color="gray.600" fontWeight="bold" lineHeight="short">
-                    Keep this code handy. You will need it when receiving your delivery.
-                  </Text>
+                  <Button
+                    size="xs"
+                    bg="emerald.600"
+                    _hover={{ bg: 'emerald.700' }}
+                    color="white"
+                    onClick={copyPickupCode}
+                    borderRadius="xl"
+                    fontWeight="bold"
+                    px={4}
+                    py={2}
+                    w="full"
+                  >
+                    <Copy size={12} style={{ marginRight: '6px' }} />
+                    {copiedPickup ? 'Copied!' : 'Copy Pickup Code'}
+                  </Button>
                 </Box>
+              </Grid>
+
+              {/* Delivery Details Details */}
+              <Grid templateColumns={{ base: '1fr', sm: '1fr 1fr 1fr' }} gap={3} pt={2} borderTopWidth="1px" borderColor="gray.850">
+                <HStack spaceX={2.5} align="center">
+                  <MapPin size={14} color="#C65D3A" style={{ flexShrink: 0 }} />
+                  <VStack align="flex-start" spaceY={0}>
+                    <Text fontSize="8.5px" color="gray.400" fontWeight="bold">LOCATION</Text>
+                    <Text fontSize="11px" fontWeight="bold" color="white">{deliveryLocation}</Text>
+                  </VStack>
+                </HStack>
+
+                <HStack spaceX={2.5} align="center">
+                  <Calendar size={14} color="#C65D3A" style={{ flexShrink: 0 }} />
+                  <VStack align="flex-start" spaceY={0}>
+                    <Text fontSize="8.5px" color="gray.400" fontWeight="bold">DELIVERY SCHEDULE</Text>
+                    <Text fontSize="11px" fontWeight="bold" color="white">{pickupDate}</Text>
+                  </VStack>
+                </HStack>
+
+                <HStack spaceX={2.5} align="center">
+                  <Clock size={14} color="#C65D3A" style={{ flexShrink: 0 }} />
+                  <VStack align="flex-start" spaceY={0}>
+                    <Text fontSize="8.5px" color="gray.400" fontWeight="bold">TIME WINDOW</Text>
+                    <Text fontSize="11px" fontWeight="bold" color="white">{pickupTime}</Text>
+                  </VStack>
+                </HStack>
               </Grid>
             </VStack>
           </Box>
@@ -147,11 +209,7 @@ export const OrderConfirmation: React.FC<OrderConfirmationProps> = ({
           <Box bg="#FAFAF7" p={5} borderRadius="2xl" borderWidth="1px" borderColor="gray.200" mb={8} w="full">
             <VStack spaceY={2.5} align="stretch" fontSize="xs">
               <Flex justify="space-between" pb={2} borderBottomWidth="1px" borderColor="gray.100">
-                <Text color="gray.400" fontWeight="bold">ORDER ID</Text>
-                <Text color="black" fontWeight="mono" fontSize="11px">#{orderId.toUpperCase()}</Text>
-              </Flex>
-              <Flex justify="space-between" pt={1}>
-                <Text color="gray.450" fontWeight="bold">SETTLED VALUE</Text>
+                <Text color="gray.500" fontWeight="bold">TOTAL SETTLED AMOUNT</Text>
                 <Text color="#C65D3A" fontWeight="extrabold" fontSize="md">₦{totalAmount.toLocaleString()}</Text>
               </Flex>
             </VStack>

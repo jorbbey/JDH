@@ -27,6 +27,7 @@ import {
   MapPin,
   ClipboardList,
   Search,
+  Copy,
 } from 'lucide-react';
 import { orderService, DetailedOrder } from '../services/orders';
 import { paymentService } from '../services/payment';
@@ -51,6 +52,14 @@ export const OrderTracking: React.FC<OrderTrackingProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
+  const [copiedCardId, setCopiedCardId] = useState<string | null>(null);
+
+  const handleCopyCardCode = (e: React.MouseEvent, code: string, id: string) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(code);
+    setCopiedCardId(id);
+    setTimeout(() => setCopiedCardId(null), 2000);
+  };
 
   const loadProofsForList = async (list: DetailedOrder[]) => {
     try {
@@ -267,10 +276,10 @@ export const OrderTracking: React.FC<OrderTrackingProps> = ({
                 </Box>
                 <VStack align="flex-start" spaceY={0}>
                   <Heading as="h1" size="xl" fontWeight="black" color="black" letterSpacing="tight">
-                    Your Meal Receipts
+                    Track My Order
                   </Heading>
                   <Text fontSize="xs" color="gray.500">
-                    Track cooking pool progress, verify bank receipts, and fetch digital gate vouchers. No signup required.
+                    Enter your Order Code, Phone Number, or Pickup Code to check your food status anytime.
                   </Text>
                 </VStack>
               </HStack>
@@ -279,7 +288,7 @@ export const OrderTracking: React.FC<OrderTrackingProps> = ({
                 <form onSubmit={handleSearch}>
                   <HStack spaceX={2}>
                     <Input
-                      placeholder="Enter Phone Number or Pickup Code..."
+                      placeholder="Enter Order Code (#ORD...), Phone Number, or Pickup Code..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       borderRadius="xl"
@@ -306,7 +315,7 @@ export const OrderTracking: React.FC<OrderTrackingProps> = ({
                 </form>
                 {searchQuery && (
                   <Button size="xs" variant="link" color="gray.500" onClick={handleReset} alignSelf="flex-start">
-                    Reset & Show Session Receipts
+                    Clear Search
                   </Button>
                 )}
                 {searchError && (
@@ -321,17 +330,17 @@ export const OrderTracking: React.FC<OrderTrackingProps> = ({
           {loading ? (
             <Flex py={24} justify="center" align="center" direction="column" gap={3}>
               <ClipboardList size={32} color="gray" className="animate-bounce" />
-              <Text fontSize="sm" color="gray.500">Querying your current pre-order ledger...</Text>
+              <Text fontSize="sm" color="gray.500">Finding your order...</Text>
             </Flex>
           ) : orders.length === 0 ? (
             <Box bg="white" py={20} textAlign="center" borderRadius="3xl" borderWidth="1px" borderColor="gray.150" shadow="sm">
               <ClipboardList size={40} style={{ margin: '0 auto 16px', color: '#CBD5E1' }} />
-              <Heading as="h3" size="md" mb={2}>No Receipts Preloaded</Heading>
+              <Heading as="h3" size="md" mb={2}>No Orders Found</Heading>
               <Text color="gray.500" fontSize="xs" maxW="sm" mx="auto" mb={6}>
-                You have not placed any pre-orders on this browser. Use the lookup search bar above with your **Phone Number** to pull previous orders!
+                You haven't placed an order on this browser yet. Type your Order Code or Phone Number in the search box above to find your order!
               </Text>
               <Button onClick={onNavigateHome} bg="#C65D3A" color="white" _hover={{ bg: '#A94B2B' }} borderRadius="xl" size="md" fontWeight="bold">
-                View Weekly Catalog Menu
+                See Food Menu
               </Button>
             </Box>
           ) : (
@@ -370,17 +379,48 @@ export const OrderTracking: React.FC<OrderTrackingProps> = ({
                       cursor="pointer"
                       onClick={() => toggleExpandOrder(order.id)}
                     >
-                      <VStack align="flex-start" spaceY={1}>
-                        <HStack spaceX={2.5}>
-                          <Text fontSize="xs" fontWeight="semibold" color="gray.500">GUEST PRE-ORDER REFERENCE</Text>
-                          <Badge colorScheme={statusInfo.color} variant="subtle" px={2} py={0.1} borderRadius="md" fontSize="9px" fontWeight="black" color={`${statusInfo.color}.800`} bg={`${statusInfo.color}.50`}>
+                      <VStack align="flex-start" spaceY={2}>
+                        <HStack spaceX={2.5} flexWrap="wrap" gap={1}>
+                          <Badge colorScheme={statusInfo.color} variant="subtle" px={2.5} py={0.5} borderRadius="md" fontSize="9.5px" fontWeight="black" color={`${statusInfo.color}.800`} bg={`${statusInfo.color}.50`}>
                             {statusInfo.label.toUpperCase()}
                           </Badge>
+                          <Text fontSize="10px" color="gray.400">Placed: {orderDate} • {order.customer_name || (order.profiles as any)?.full_name || 'Guest'}</Text>
                         </HStack>
-                        <Heading as="h4" size="sm" fontWeight="black" color="black" fontFamily="monospace">
-                          #{order.id.split('-')[0]?.toUpperCase() || order.id.toUpperCase()} (Code: {order.pickup_code_direct || 'Pending'})
-                        </Heading>
-                        <Text fontSize="10px" color="gray.400">Placed: {orderDate} • Customer: {order.customer_name || (order.profiles as any)?.full_name || 'Guest'}</Text>
+
+                        <HStack spaceX={2} flexWrap="wrap" gap={2}>
+                          {/* Prominent Order Code Badge */}
+                          <Box bg="#FFF3EB" borderWidth="1.5px" borderColor="#C65D3A" px={3} py={1.5} borderRadius="xl" display="flex" alignItems="center" gap={2}>
+                            <Text fontSize="10px" fontWeight="black" color="#C65D3A">ORDER CODE:</Text>
+                            <Text fontSize="xs" fontWeight="950" color="black" fontFamily="monospace">
+                              #{order.id.toUpperCase()}
+                            </Text>
+                            <Button
+                              size="xs"
+                              h="20px"
+                              px={2}
+                              bg="#C65D3A"
+                              color="white"
+                              _hover={{ bg: '#A94B2B' }}
+                              borderRadius="md"
+                              fontSize="9px"
+                              fontWeight="bold"
+                              onClick={(e) => handleCopyCardCode(e, `#${order.id.toUpperCase()}`, order.id)}
+                            >
+                              <Copy size={10} style={{ marginRight: '3px' }} />
+                              {copiedCardId === order.id ? 'Copied' : 'Copy'}
+                            </Button>
+                          </Box>
+
+                          {/* Pickup Code Badge */}
+                          {order.pickup_code_direct && (
+                            <Box bg="emerald.50" borderWidth="1.5px" borderColor="emerald.400" px={3} py={1.5} borderRadius="xl" display="flex" alignItems="center" gap={1.5}>
+                              <Text fontSize="10px" fontWeight="black" color="emerald.800">PICKUP CODE:</Text>
+                              <Text fontSize="xs" fontWeight="950" color="emerald.900" fontFamily="monospace">
+                                {order.pickup_code_direct}
+                              </Text>
+                            </Box>
+                          )}
+                        </HStack>
                       </VStack>
 
                       <HStack spaceX={6} flexWrap="wrap">

@@ -200,13 +200,13 @@ export const CateringBooking: React.FC<CateringBookingProps> = ({
             <Box bg="white" p={8} borderRadius="3xl" borderWidth="1px" borderColor="gray.150" shadow="sm">
               <VStack align="flex-start" spaceY={2.5} mb={6}>
                 <Badge bg="#FFF8F0" color="#C65D3A" px={2.5} py={0.5} borderRadius="md" fontSize="9px" fontWeight="bold">
-                  STUDENT CO-OP CATERING
+                  CATERING SERVICE
                 </Badge>
                 <Heading as="h1" size="xl" fontWeight="black" color="black" letterSpacing="tight">
-                  Hostel Feast & Events Banquet Booking
+                  Book Catering for Events & Parties
                 </Heading>
                 <Text fontSize="xs" color="gray.500" lineHeight="relaxed">
-                  Planning a birthday banquet, fellowship picnic, or a floor block feast? Submit your culinary requirements, guest size, and date. JDH Kitchen prepares special larger recipes at co-op factory prices.
+                  Planning a birthday party, meeting, fellowship, or get-together? Tell us your food plan, date, and number of guests. We will cook fresh, delicious food for your event at low prices.
                 </Text>
               </VStack>
 

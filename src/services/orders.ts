@@ -498,12 +498,13 @@ export const orderService = {
       .eq('id', orderId)
       .single();
 
-    if (error) {
-      console.error(`Error querying order ${orderId}:`, error);
+    if (error || !order) {
+      // Fallback to MOCK_ORDERS in case order was created locally or in preview mock state
+      const match = MOCK_ORDERS.find((o) => o.id === orderId);
+      if (match) return parseGuestOrder(match);
+      if (error) console.warn(`Order ${orderId} not found in Supabase database:`, error.message);
       return null;
     }
-
-    if (!order) return null;
 
     const parsed = parseGuestOrder(order);
     parsed.items = (order.items as any[]).map((item) => ({

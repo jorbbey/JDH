@@ -42,12 +42,12 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                   JDH KITCHEN
                 </Heading>
                 <Text fontSize="10px" fontWeight="black" color="#C65D3A" letterSpacing="widest" textTransform="uppercase">
-                  CAMPUS FOOD CO-OP
+                  FRESH HOMEMADE MEALS
                 </Text>
               </VStack>
             </HStack>
             <Text fontSize="sm" color="gray.600" lineHeight="relaxed">
-              The modern student-first culinary co-operative. We gather aggregate campus pre-orders to prepare premium, chef-quality traditional dishes at unbeatable batch prices.
+              Fresh, delicious homemade food cooked for students at low, affordable prices. Order online and pick up easily on campus.
             </Text>
 
             {/* Social links with actual Lucide icons */}
@@ -67,29 +67,29 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             </HStack>
           </VStack>
 
-          {/* Column 2: Kitchen Co-op Menus */}
+          {/* Column 2: Kitchen Services */}
           <VStack align="flex-start" spaceY={3}>
             <Text fontSize="xs" fontWeight="black" color="gray.400" letterSpacing="widest" textTransform="uppercase">
-              Service
+              Our Services
             </Text>
             <Button variant="link" size="sm" color="gray.600" _hover={{ color: 'black' }} onClick={() => onNavigate('menu-list')}>
-              Online Order
+              Order Food
             </Button>
             <Button variant="link" size="sm" color="gray.600" _hover={{ color: 'black' }} onClick={() => onNavigate('catering')}>
-              Pre-Reservation
+              Book Catering & Parties
             </Button>
           </VStack>
 
-          {/* Column 3: Logistics & Spots */}
+          {/* Column 3: Quick Links */}
           <VStack align="flex-start" spaceY={3}>
             <Text fontSize="xs" fontWeight="black" color="gray.400" letterSpacing="widest" textTransform="uppercase">
               Quick Links
             </Text>
             <Button variant="link" size="sm" color="gray.600" _hover={{ color: 'black' }} onClick={() => onNavigate('menu-list')}>
-              Menu Pack
+              Food Menu
             </Button>
             <Button variant="link" size="sm" color="gray.600" _hover={{ color: 'black' }} onClick={() => onNavigate('order-tracking')}>
-              Order Tracking
+              Track My Order
             </Button>
           </VStack>
         </Grid>

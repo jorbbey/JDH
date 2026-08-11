@@ -55,13 +55,57 @@ export const Cart: React.FC<CartProps> = ({
   onBackToMenu,
   onCheckoutSuccess,
 }) => {
-  const [fullName, setFullName] = useState(currentUser?.full_name || '');
-  const [phone, setPhone] = useState(currentUser?.phone || '');
-  const [whatsappNumber, setWhatsappNumber] = useState('');
+  // Auto-fill and auto-save customer contact info from local storage
+  const [fullName, setFullName] = useState(() => {
+    if (currentUser?.full_name) return currentUser.full_name;
+    try {
+      const saved = localStorage.getItem('jdh_saved_customer_info');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.fullName) return parsed.fullName;
+      }
+    } catch (e) {}
+    return '';
+  });
+
+  const [phone, setPhone] = useState(() => {
+    if (currentUser?.phone) return currentUser.phone;
+    try {
+      const saved = localStorage.getItem('jdh_saved_customer_info');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.phone) return parsed.phone;
+      }
+    } catch (e) {}
+    return '';
+  });
+
+  const [whatsappNumber, setWhatsappNumber] = useState(() => {
+    try {
+      const saved = localStorage.getItem('jdh_saved_customer_info');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.whatsappNumber) return parsed.whatsappNumber;
+      }
+    } catch (e) {}
+    return '';
+  });
+
   const [deliveryLocation, setDeliveryLocation] = useState('Front of school (for off-klites)');
   
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Save info locally whenever user updates name, phone, or whatsapp
+  const saveCustomerLocally = (nameVal: string, phoneVal: string, waVal: string) => {
+    try {
+      localStorage.setItem('jdh_saved_customer_info', JSON.stringify({
+        fullName: nameVal,
+        phone: phoneVal,
+        whatsappNumber: waVal,
+      }));
+    } catch (e) {}
+  };
 
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const deliveryFee = 0; // No individual delivery. All customers collect orders from central location.
@@ -83,6 +127,7 @@ export const Cart: React.FC<CartProps> = ({
     }
 
     setIsSubmitting(true);
+    saveCustomerLocally(fullName.trim(), phone.trim(), whatsappNumber.trim());
     try {
       // Map cartItems to OrderItemInput database format
       const itemsInput = cartItems.map((item) => ({
@@ -146,11 +191,48 @@ export const Cart: React.FC<CartProps> = ({
           mb={8}
         >
           <ArrowLeft size={16} style={{ marginRight: '6px' }} />
-          Return to Weekly Catalog
+          Back to Food Menu
         </Button>
 
-        <Heading as="h1" size="xl" fontWeight="black" color="black" mb={10} letterSpacing="tight">
-          Your Culinary Basket
+        {/* Stepper Header */}
+        <Flex justify="space-between" align="center" mb={8} bg="white" p={4} borderRadius="2xl" borderWidth="1px" borderColor="gray.150" shadow="sm" overflowX="auto">
+          <HStack spaceX={3} flexShrink={0}>
+            <Flex w={7} h={7} borderRadius="full" bg="#C65D3A" color="white" align="center" justify="center" fontWeight="black" fontSize="xs">
+              1
+            </Flex>
+            <VStack align="flex-start" spaceY={0}>
+              <Text fontSize="xs" fontWeight="bold" color="black">Cart & Your Info</Text>
+              <Text fontSize="9px" color="#C65D3A" fontWeight="bold">Current Step</Text>
+            </VStack>
+          </HStack>
+
+          <Box h="1px" bg="gray.200" flex="1" mx={4} minW="30px" />
+
+          <HStack spaceX={3} opacity={0.6} flexShrink={0}>
+            <Flex w={7} h={7} borderRadius="full" bg="gray.200" color="gray.600" align="center" justify="center" fontWeight="bold" fontSize="xs">
+              2
+            </Flex>
+            <VStack align="flex-start" spaceY={0}>
+              <Text fontSize="xs" fontWeight="bold" color="gray.700">Bank Transfer</Text>
+              <Text fontSize="9px" color="gray.400">Next Step</Text>
+            </VStack>
+          </HStack>
+
+          <Box h="1px" bg="gray.200" flex="1" mx={4} minW="30px" />
+
+          <HStack spaceX={3} opacity={0.6} flexShrink={0}>
+            <Flex w={7} h={7} borderRadius="full" bg="gray.200" color="gray.600" align="center" justify="center" fontWeight="bold" fontSize="xs">
+              3
+            </Flex>
+            <VStack align="flex-start" spaceY={0}>
+              <Text fontSize="xs" fontWeight="bold" color="gray.700">Get Pickup Code</Text>
+              <Text fontSize="9px" color="gray.400">Final Step</Text>
+            </VStack>
+          </HStack>
+        </Flex>
+
+        <Heading as="h1" size="xl" fontWeight="black" color="black" mb={8} letterSpacing="tight">
+          Your Food Cart
         </Heading>
 
         {checkoutError && (
@@ -163,12 +245,12 @@ export const Cart: React.FC<CartProps> = ({
         {cartItems.length === 0 ? (
           <Box bg="white" p={12} textAlign="center" borderRadius="3xl" borderWidth="1px" borderColor="gray.150" shadow="sm">
             <ShoppingCart size={44} style={{ margin: '0 auto 16px', color: '#CBD5E1' }} />
-            <Heading as="h3" size="md" mb={2}>Basket is Currently Empty</Heading>
+            <Heading as="h3" size="md" mb={2}>Your Cart is Empty</Heading>
             <Text color="gray.500" fontSize="xs" maxW="sm" mx="auto" mb={6}>
-              You haven't selected any dishes for the current weekly cycle yet. Visit the catalog to view meals.
+              You have not added any meals yet. Click below to see today's delicious menu!
             </Text>
             <Button onClick={onBackToMenu} bg="black" color="white" _hover={{ bg: 'gray.800' }} borderRadius="xl" size="md" fontWeight="bold" py={6} px={8}>
-              Explore Fresh Dishes
+              See Food Menu
             </Button>
           </Box>
         ) : (
@@ -274,7 +356,7 @@ export const Cart: React.FC<CartProps> = ({
                 <HStack spaceX={2} pb={2} borderBottomWidth="1.5px" borderColor="gray.100">
                   <MapPin size={17} color="#C65D3A" />
                   <Heading as="h3" size="sm" fontWeight="bold" color="black">
-                    Pickup & Checkout Metadata
+                    Your Contact & Pickup Details
                   </Heading>
                 </HStack>
 
@@ -292,13 +374,13 @@ export const Cart: React.FC<CartProps> = ({
                     required
                     color="black"
                   />
-                  <Text fontSize="9px" color="gray.500">Must match the sender name on your direct bank transfer receipt.</Text>
+                  <Text fontSize="9px" color="gray.500">Please write the same name on your bank account.</Text>
                 </VStack>
 
                 <VStack align="flex-start" spaceY={1}>
                   <Text fontSize="10.5px" fontWeight="bold" color="gray.500">Phone Number *</Text>
                   <Input
-                    placeholder="e.g. +234 703 891 2407"
+                    placeholder="e.g. 07038912407"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     bg="#FAFAF7"
@@ -309,13 +391,13 @@ export const Cart: React.FC<CartProps> = ({
                     required
                     color="black"
                   />
-                  <Text fontSize="9px" color="gray.500">Primary phone number for collection alerts and pickup confirmations.</Text>
+                  <Text fontSize="9px" color="gray.500">Phone number we will call when your food is ready.</Text>
                 </VStack>
 
                 <VStack align="flex-start" spaceY={1}>
                   <Text fontSize="10.5px" fontWeight="bold" color="gray.500">WhatsApp Number (Optional)</Text>
                   <Input
-                    placeholder="e.g. +234 703 891 2407"
+                    placeholder="e.g. 07038912407"
                     value={whatsappNumber}
                     onChange={(e) => setWhatsappNumber(e.target.value)}
                     bg="#FAFAF7"
@@ -325,7 +407,7 @@ export const Cart: React.FC<CartProps> = ({
                     size="sm"
                     color="black"
                   />
-                  <Text fontSize="9px" color="gray.500">If different from your primary phone number above.</Text>
+                  <Text fontSize="9px" color="gray.500">Only if different from your phone number above.</Text>
                 </VStack>
 
                 <VStack align="flex-start" spaceY={2.5}>
@@ -387,16 +469,16 @@ export const Cart: React.FC<CartProps> = ({
               {/* Bill Details Sidecard */}
               <VStack align="stretch" spaceY={4} bg="white" p={6.5} borderRadius="3xl" borderWidth="1px" borderColor="gray.150" shadow="sm">
                 <Heading as="h3" size="sm" fontWeight="bold" color="black" pb={2} borderBottomWidth="1.5px" borderColor="gray.100">
-                  Pre-Order Summary
+                  Order Summary
                 </Heading>
 
                 <VStack spaceY={2.5} align="stretch" fontSize="xs">
                   <Flex justify="space-between">
-                    <Text color="gray.500">Aggregate Bulk Subtotal</Text>
+                    <Text color="gray.500">Food Subtotal</Text>
                     <Text color="black" fontWeight="semibold">₦{subtotal.toLocaleString()}</Text>
                   </Flex>
                   <Flex justify="space-between" pt={3} borderTopWidth="1px" borderStyle="dashed" borderColor="gray.200" fontSize="sm" fontWeight="bold">
-                    <Text color="black">Fulfillable Goal Total</Text>
+                    <Text color="black">Total Amount to Pay</Text>
                     <Text color="#C65D3A" fontSize="lg" fontWeight="black">₦{total.toLocaleString()}</Text>
                   </Flex>
                 </VStack>
@@ -416,10 +498,10 @@ export const Cart: React.FC<CartProps> = ({
                     px={10}
                   >
                     <CreditCard size={15} style={{ marginRight: '8px' }} />
-                    Proceed with Direct Transfer
+                    Pay by Bank Transfer
                   </Button>
                   <Text fontSize="9px" color="gray.550" align="center" lineHeight="short">
-                    Direct transfer is arranged on a campus cooperative trust basis. If the pre-order cooking threshold is not achieved, your funds are fully refunded to you.
+                    Your money is safe. If a meal cannot be prepared, you will receive a full 100% refund immediately.
                   </Text>
                 </VStack>
               </VStack>

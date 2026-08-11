@@ -659,7 +659,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           <Flex justify="space-between" align="center" mb={10}>
             <VStack align="flex-start" spaceY={1}>
               <Text fontSize="xs" fontWeight="bold" letterSpacing="widest" color="#C65D3A" textTransform="uppercase">
-                Chef's Recommendations
+                Popular Food
               </Text>
               <Heading as="h2" size="xl" fontWeight="950" color="black" letterSpacing="-0.02em">
                 Popular Dishes
@@ -869,10 +869,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         <Container maxW={{ base: "100%", md: "90%" }} px={{ base: 3, md: 4 }}>
           <VStack spaceY={3} align="center" textAlign="center" mb={12}>
             <Text fontSize="xs" fontWeight="bold" letterSpacing="widest" color="#C65D3A" textTransform="uppercase">
-              Dynamic Campus Catalog
+              Today's Menu
             </Text>
             <Heading as="h2" size="2xl" fontWeight="950" color="black" letterSpacing="-0.03em">
-              Our Regular Menu Pack
+              Our Delicious Food Menu
             </Heading>
             
             {/* Category tabs matching the screenshot tabs exactly */}

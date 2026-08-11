@@ -184,13 +184,13 @@ export const MenuList: React.FC<MenuListProps> = ({
           <Grid templateColumns={{ base: '1fr', md: '1.2fr 0.8fr' }} gap={6} alignItems="center">
             <VStack align="flex-start" spaceY={2.5}>
               <Badge bg="#FFF8F0" color="#C65D3A" px={3} py={1} borderRadius="lg" fontSize="10px" fontWeight="bold">
-                ACTIVE COOKING MENU
+                TODAY'S FOOD MENU
               </Badge>
               <Heading as="h1" size="2xl" fontWeight="black" color="black" letterSpacing="tight">
-                JDH Kitchen Pre-Order Catalog
+                JDH Kitchen Food Menu
               </Heading>
               <Text fontSize="sm" color="gray.500">
-                {weekRange || 'Active Weekly Cycle'} • Fresh Nigerian recipes prepared by gathering collective student demand. Zero waste, street price, delivered warm.
+                {weekRange || 'Active Weekly Menu'} • Fresh, delicious Nigerian meals made for students at affordable prices. Order online and pick up fresh!
               </Text>
             </VStack>
 
@@ -198,10 +198,10 @@ export const MenuList: React.FC<MenuListProps> = ({
               <VStack align="stretch" spaceY={2}>
                 <HStack spaceX={2}>
                   <TrendingUp size={15} color="#C65D3A" />
-                  <Text fontSize="xs" fontWeight="bold" color="black">Threshold Multi-Buyer Model</Text>
+                  <Text fontSize="xs" fontWeight="bold" color="black">Group Ordering Discount</Text>
                 </HStack>
                 <Text fontSize="11px" color="gray.500" lineHeight="relaxed">
-                  We prepare premium recipes in bulk only when student demand crosses <strong>{thresholdSpan}</strong> per meal. Direct personal refund: your transfer is fully returned if the batch threshold fails.
+                  We cook meals fresh when students order together. Your money is completely safe — if a meal cannot be prepared, you get a 100% full refund immediately.
                 </Text>
               </VStack>
             </Box>
