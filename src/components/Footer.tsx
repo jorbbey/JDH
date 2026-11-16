@@ -110,6 +110,20 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             <Button variant="link" size="xs" color="gray.500">Privacy Policy</Button>
           </HStack>
         </Flex>
+
+        <Box mt={6} pt={4} borderTopWidth="1px" borderColor="gray.100" textAlign="center">
+          <Text fontSize="xs" color="gray.500">
+            Powered by{' '}
+            <a
+              href="https://jorbbey.com.ng"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold text-[#C65D3A] hover:underline"
+            >
+              Jorbbey
+            </a>
+          </Text>
+        </Box>
       </Container>
     </Box>
   );
